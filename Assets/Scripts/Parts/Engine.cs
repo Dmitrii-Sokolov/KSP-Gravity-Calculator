@@ -45,4 +45,28 @@ public class Engine : Part
     public bool RadialMountedOnly;
 
     public FuelType Fuel;
+
+    /// <summary>
+    /// Specific impulse, s
+    /// </summary>
+    public float GetImpulse(Stage stage)
+    {
+        return stage == Stage.Second ? Impulse : ImpulseAtOneAtmosphere;
+    }
+
+    /// <summary>
+    /// Specific impulse, s
+    /// </summary>
+    public float GetImpulseByMass(Stage stage)
+    {
+        return stage == Stage.Second ? ImpulseByMass : ImpulseByMassAtOneAtmosphere;
+    }
+
+    /// <summary>
+    /// Thrust, kN
+    /// </summary>
+    public float GetThrust(Stage stage)
+    {
+        return stage == Stage.Second ? Thrust : ThrustAtOneAtmosphere;
+    }
 }
