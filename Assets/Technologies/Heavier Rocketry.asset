@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b76b4401aa9ed004b8eef513ccbb3a71, type: 3}
+  m_Name: Heavier Rocketry
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 7c7243fa1b95f9e47be2f8412589d60a, type: 3}
+  Name: Heavier Rocketry
+  Level: 6
+  Parts:
+  - {fileID: 11400000, guid: 92edc685242f03241b5d5ae2238acae0, type: 2}
+  - {fileID: 11400000, guid: 8442540e39f279e4fb2189122ed41def, type: 2}
+  - {fileID: 11400000, guid: 2669d4abab025904e81284f7ab70b8dd, type: 2}
+  - {fileID: 11400000, guid: cd8edfc7803415d4998f51a86246a4b3, type: 2}
+  - {fileID: 11400000, guid: 65c9fb98733aff24289c94231776b683, type: 2}
+  - {fileID: 11400000, guid: 0aa907f764b9f6543a0a69a64c3dec3b, type: 2}

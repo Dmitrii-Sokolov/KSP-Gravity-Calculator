@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b76b4401aa9ed004b8eef513ccbb3a71, type: 3}
+  m_Name: Heavy Rocketry
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: a7dbc469fd30f4e42b068b2079a66e6f, type: 3}
+  Name: Heavy Rocketry
+  Level: 5
+  Parts:
+  - {fileID: 11400000, guid: 71da79872229b5547871b7df6c4d7516, type: 2}
+  - {fileID: 11400000, guid: 8fa16f145dd2f424995ac4efc3b1099d, type: 2}
+  - {fileID: 11400000, guid: 1668093e506e591458d835e163c0606c, type: 2}
+  - {fileID: 11400000, guid: a2378ef55000eac45a5569b8f8b4ad89, type: 2}
+  - {fileID: 11400000, guid: dd9a5fda1ba88504ab84f3c55d59feb3, type: 2}

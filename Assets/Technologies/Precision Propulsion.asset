@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b76b4401aa9ed004b8eef513ccbb3a71, type: 3}
+  m_Name: Precision Propulsion
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 1a5d308421abad145870b61315e6270a, type: 3}
+  Name: Precision Propulsion
+  Level: 6
+  Parts:
+  - {fileID: 11400000, guid: 0a357af29b3106841ac8c51aa3bd31c8, type: 2}
+  - {fileID: 11400000, guid: e9c97bd247c0f2e45bc5cd186b03a40a, type: 2}
+  - {fileID: 11400000, guid: 77571a538a7cd2c42a54f3001c4163f1, type: 2}
+  - {fileID: 11400000, guid: 6751a98464d299943998cf0b8b8c6484, type: 2}
+  - {fileID: 11400000, guid: 77dcf553814d2cf47988552a8fcdad04, type: 2}

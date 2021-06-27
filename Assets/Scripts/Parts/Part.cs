@@ -12,7 +12,7 @@ public class Part : ScriptableObject
     [Label("Mass, kg")]
     public float Mass;
 
-    private static Part[] GetAllParts()
+    public static Part[] GetAll()
     {
         return Resources.FindObjectsOfTypeAll<Part>();
     }
