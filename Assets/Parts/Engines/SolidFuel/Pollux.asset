@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e727df8813e495f41b91ef1914ae61e8, type: 3}
+  m_Name: Pollux
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 32f9d68a370f20c49a5a3551d465bc97, type: 3}
+  Alias: Pollux
+  Name: THK "Pollux" Solid Fuel Booster
+  Cost: 6000
+  Mass: 8000
+  Thrust: 1300
+  Impulse: 225
+  ImpulseAtOneAtmosphere: 200
+  Fixed: 1
+  RadialMountedOnly: 0
+  Fuel: 3
+  FuelMass: 43500

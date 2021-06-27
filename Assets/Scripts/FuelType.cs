@@ -10,6 +10,9 @@ public enum FuelType
     [InspectorName("Liquid Fuel")]
     LiquidFuel,
 
+    [InspectorName("Solid Fuel")]
+    SolidFuel,
+
     [InspectorName("Xenon Gas")]
     Xenon
 }

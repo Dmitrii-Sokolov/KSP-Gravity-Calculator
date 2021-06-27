@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e727df8813e495f41b91ef1914ae61e8, type: 3}
+  m_Name: Hammer
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 728a11bd1a03c7244a35ae2a42b671aa, type: 3}
+  Alias: Hammer
+  Name: RT-10 "Hammer" Solid Fuel Booster
+  Cost: 400
+  Mass: 750
+  Thrust: 300
+  Impulse: 195
+  ImpulseAtOneAtmosphere: 170
+  Fixed: 1
+  RadialMountedOnly: 0
+  Fuel: 3
+  FuelMass: 2810
