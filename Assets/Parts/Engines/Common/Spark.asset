@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Spark
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 963ef7e49019a494fba39e783407fd6e, type: 3}
+  Alias: Spark
   Name: 48-7S "Spark" Liquid Fuel Engine
-  NameRus: 
   Cost: 240
   Mass: 130
   Thrust: 20

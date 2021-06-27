@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Terrier
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 2ee5a65362955704a8c9972f5cb3afd5, type: 3}
+  Alias: Terrier
   Name: LV-909 "Terrier" Liquid Fuel Engine
-  NameRus: 
   Cost: 390
   Mass: 500
   Thrust: 60

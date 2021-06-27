@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Twitch
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: d1b67d9d5056336458508407399051f6, type: 3}
+  Alias: Twitch
   Name: 24-77 "Twitch" Liquid Fuel Engine
-  NameRus: 
   Cost: 230
   Mass: 80
   Thrust: 16

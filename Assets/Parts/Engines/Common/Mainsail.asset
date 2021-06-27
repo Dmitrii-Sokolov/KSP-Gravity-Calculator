@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Mainsail
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: d5679d358785520448eeb43c067c6c1a, type: 3}
+  Alias: Mainsail
   Name: RE-M3 "Mainsail" Liquid Fuel Engine
-  NameRus: 
   Cost: 13000
   Mass: 6000
   Thrust: 1500

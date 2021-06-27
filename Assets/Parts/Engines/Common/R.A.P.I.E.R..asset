@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
-  m_Name: R.A.P.I.E.R
+  m_Name: R.A.P.I.E.R.
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 4c2614386b453114d9bd7fa4cfa4f8e0, type: 3}
+  Alias: R.A.P.I.E.R.
   Name: CR-7 R.A.P.I.E.R. Engine
-  NameRus: 
   Cost: 6000
   Mass: 2000
   Thrust: 180

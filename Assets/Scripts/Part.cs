@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class Part : ScriptableObject
 {
+    public Sprite Sprite;
+
+    public string Alias;
     public string Name;
-    public string NameRus;
 
     public float Cost;
 

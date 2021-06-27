@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Ant
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 263b7e7ca2c859243bf9228c86b2060e, type: 3}
+  Alias: Ant
   Name: LV-1 "Ant" Liquid Fuel Engine
-  NameRus: 
   Cost: 110
   Mass: 20
   Thrust: 2

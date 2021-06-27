@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Spider
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: fb307d269361fd44091a8d1fe3e3d56f, type: 3}
+  Alias: Spider
   Name: LV-1R "Spider" Liquid Fuel Engine
-  NameRus: 
   Cost: 120
   Mass: 20
   Thrust: 2

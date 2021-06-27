@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Poodle
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: e5353e3471ba4aa46a89ebf046294abf, type: 3}
+  Alias: Poodle
   Name: 'RE-L10 "Poodle" Liquid Fuel Engine '
-  NameRus: 
   Cost: 1300
   Mass: 1750
   Thrust: 250

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Twin-Boar
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 68bdc0ddf214bd14c9f83e5f69641c73, type: 3}
+  Alias: Twin-Boar
   Name: LFB KR-1x2 "Twin-Boar" Liquid Fuel Engine
-  NameRus: 
   Cost: 11250
   Mass: 6750
   Thrust: 2000

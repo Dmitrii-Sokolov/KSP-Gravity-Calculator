@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Rhino
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 154932706a788a14f80641495a470611, type: 3}
+  Alias: Rhino
   Name: 'Kerbodyne KR-2L+ "Rhino" Liquid Fuel Engine '
-  NameRus: 
   Cost: 25000
   Mass: 9000
   Thrust: 2000

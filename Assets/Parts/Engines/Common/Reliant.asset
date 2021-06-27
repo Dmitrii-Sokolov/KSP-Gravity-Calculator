@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Reliant
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 876a9e4ab65751545abd821c46f2a722, type: 3}
+  Alias: Reliant
   Name: 'LV-T30 "Reliant" Liquid Fuel Engine '
-  NameRus: 
   Cost: 1100
   Mass: 1250
   Thrust: 240

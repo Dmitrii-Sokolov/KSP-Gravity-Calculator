@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Dart
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 056d6c3f261876d44a4d4a0fa5b0bfd3, type: 3}
+  Alias: Dart
   Name: 'T-1 Toroidal Aerospike "Dart" Liquid Fuel Engine '
-  NameRus: 
   Cost: 3850
   Mass: 1000
   Thrust: 180

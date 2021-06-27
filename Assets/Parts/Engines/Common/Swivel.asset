@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Swivel
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: b6f9f36578bec604d9df2847feee2187, type: 3}
+  Alias: Swivel
   Name: 'LV-T45 "Swivel" Liquid Fuel Engine '
-  NameRus: 
   Cost: 1200
   Mass: 1500
   Thrust: 215

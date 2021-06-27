@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Puff
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 2789842c74a0ada4da97e6e8e92058b3, type: 3}
+  Alias: Puff
   Name: O-10 "Puff" MonoPropellant Fuel Engine
-  NameRus: 
   Cost: 150
   Mass: 90
   Thrust: 20

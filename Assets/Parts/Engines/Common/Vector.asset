@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d15697ead5d5534b856ae82596c3914, type: 3}
   m_Name: Vector
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: 92882c80ef1c8294db14f26f2dcde37c, type: 3}
+  Alias: Vector
   Name: 'S3 KS-25 "Vector" Liquid Fuel Engine '
-  NameRus: 
   Cost: 18000
   Mass: 4000
   Thrust: 1000
