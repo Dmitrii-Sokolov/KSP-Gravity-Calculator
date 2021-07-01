@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b8a6384ae00757489b71d6b2848d738, type: 3}
+  m_Name: TT-38K
+  m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: a327da63fc264a44b83df6993368cbc6, type: 3}
+  Alias: TT-38K
+  Name: TT-38K Radial Decoupler
+  Cost: 600
+  Mass: 25
