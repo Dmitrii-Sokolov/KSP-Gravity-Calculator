@@ -9,6 +9,8 @@ public class Tester : MonoBehaviour
         var techs = Technology.GetAll();
         var parts = Part.GetAll().OfType<Engine>();
 
+        //TODO Реализовать автоматическое добавление ScriptableObjects
+
         foreach (var part in parts)
         {
             var tech = techs.FirstOrDefault(t => t.Parts.Contains(part));

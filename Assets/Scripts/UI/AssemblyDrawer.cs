@@ -28,8 +28,10 @@ public class AssemblyDrawer : MonoBehaviour
 
     public void Init(LiquidSolidClassicEngineAssembly assembly)
     {
-        //Сделать нормально + группировка по три цифры
-        //Моноширинный шрифт
+        //TODO Сделать нормальные стили + группировка по три цифры
+        //TODO Моноширинный шрифт
+        //TODO Добавить настройку отсечения
+        //TODO Добавить ScrollView
 
         mEngine0Count.text = assembly.Engine0Count.ToString();
         mEngine0Image.sprite = assembly.Engine0.Sprite;
@@ -40,17 +42,17 @@ public class AssemblyDrawer : MonoBehaviour
         mEngine1Image.sprite = assembly.Engine1.Sprite;
         mEngine1Alias.text = assembly.Engine1.Alias;
 
-        mLiquidFuelTankMass0.text = assembly.LiquidFuelTankMass0.ToString("0.0") + "kg";
-        mLiquidFuelTankMass1.text = assembly.LiquidFuelTankMass1.ToString("0.0") + "kg";
+        mLiquidFuelTankMass0.text = assembly.LiquidFuelTankMass0.ToString("0") + "kg";
+        mLiquidFuelTankMass1.text = assembly.LiquidFuelTankMass1.ToString("0") + "kg";
 
-        mDeltaV.text = assembly.DeltaV.ToString() + "m/s";
-        mCost.text = assembly.Cost.ToString();
+        mDeltaV.text = assembly.DeltaV.ToString("0") + "m/s";
+        mCost.text = assembly.Cost.ToString("0");
 
-        mDeltaV0.text = assembly.DeltaV0.ToString() + "m/s";
-        mDeltaV1.text = assembly.DeltaV1.ToString() + "m/s";
+        mDeltaV0.text = assembly.DeltaV0.ToString("0") + "m/s";
+        mDeltaV1.text = assembly.DeltaV1.ToString("0") + "m/s";
 
-        mTime0.text = assembly.Time0.ToString() + "s";
-        mTime1.text = assembly.Time0.ToString() + "s";
+        mTime0.text = assembly.Time0.ToString("0") + "s";
+        mTime1.text = assembly.Time1.ToString("0") + "s";
 
         Cost = assembly.Cost;
     }
