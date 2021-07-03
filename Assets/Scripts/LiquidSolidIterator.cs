@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AssembliesIterator
+public class LiquidSolidIterator
 {
-    private const float mMaximumCostExcess = 1.2f;
-    private const int mMaximumEnginesPerStage = 8;
+    private const float mMaximumCostExcessMultiplayer = 1.25f;
+    private const float mMaximumCostExcessAddition = 1000f;
+    private const float mMinimumFirstStageDeltaV = 0.15f;
+    private const int mMaximumEnginesPerStage = 9;
+    private const int mMaximumAssembliesOnScreen = 30;
 
     private List<Engine> mEngines = new List<Engine>();
     private List<Engine> mLiquidFuelEngines = new List<Engine>();
     private List<SolidFuelEngine> mSolidFuelEngines = new List<SolidFuelEngine>();
-    private Decoupler mDecoupler;
+
+    private Decoupler mRadialDecoupler;
+    private Decoupler mStraightDecoupler;
 
     public float Payload { get; set; } = 1000f;
     public List<Technology> Technologies { get; set; } = new List<Technology>();
@@ -22,6 +27,9 @@ public class AssembliesIterator
 
     public void Calculate()
     {
+        //TODO Ж-Ж итератор
+        //TODO Расчёт двигателей для полезной нагрузки
+
         Assemblies.Clear();
         BestCost = float.PositiveInfinity;
 
@@ -38,7 +46,8 @@ public class AssembliesIterator
         mSolidFuelEngines.Clear();
         mSolidFuelEngines.AddRange(mEngines.OfType<SolidFuelEngine>());
 
-        mDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TT-70");
+        mRadialDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TT-70");
+        mStraightDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TD-12");
 
         foreach (var engine0 in mSolidFuelEngines)
         {
@@ -46,7 +55,7 @@ public class AssembliesIterator
                 TryUseEngines(engine0, engine1, Payload);
         }
 
-        Assemblies = Assemblies.Where(assembly => assembly.Cost < BestCost * mMaximumCostExcess).OrderBy(set => set.Cost).ToList();
+        Assemblies = Assemblies.Where(IsCheep).OrderBy(set => set.Cost).Take(mMaximumAssembliesOnScreen).ToList();
     }
 
     private void TryUseEngines(SolidFuelEngine engine0, Engine engine1, float payload)
@@ -56,7 +65,7 @@ public class AssembliesIterator
         assembly.Engine1 = engine1;
 
         var minimumSecondStageEnginesCount = Mathf.CeilToInt(Payload / (engine1.ThrustVacuum / Constants.MinAcceleration - engine1.Mass));
-        for (var count1 = minimumSecondStageEnginesCount; count1 < mMaximumEnginesPerStage; count1++)
+        for (var count1 = minimumSecondStageEnginesCount; count1 < mMaximumEnginesPerStage + 1; count1++)
         {
             if (engine1.RadialMountedOnly && count1 == 1)
                 continue;
@@ -66,9 +75,7 @@ public class AssembliesIterator
             var liquidFuelConsumption = count1 * engine1.FuelConsumption;
             var mass1Start = thrust1 / Constants.MinAcceleration;
             var liquidFuelTankMass1 = mass1Start - engines1mass - payload;
-
-            //TODO Проверить что TwinBoar корректно считается
-            if (engine1 is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count1 < liquidFuelTankMass1)
+            if (engine1 is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count1 > liquidFuelTankMass1)
                 continue;
 
             var liquidFuelMass1 = liquidFuelTankMass1 / Constants.FuelMassToFuelTankMass;
@@ -85,10 +92,27 @@ public class AssembliesIterator
                 (Constants.MinAcceleration * (engine0.Mass + engine0.FuelMass) - engine0.ThrustAtOneAtmosphere));
             count0Min = Mathf.Max(count0Min, count1 == 1 ? 2 : 1);
 
-            for (var count0 = count0Min; count0 < mMaximumEnginesPerStage; count0++)
+            for (var count0 = count0Min; count0 < mMaximumEnginesPerStage + 1; count0++)
             {
+                var decouplerCount = 2;
+                var decoupler = mRadialDecoupler;
+
+                if (count0 == 5 || count0 == 7)
+                {
+                    continue;
+                }
+                else if (count0 == 1)
+                {
+                    decouplerCount = 1;
+                    decoupler = mStraightDecoupler;
+                }
+                else if (count0 == 3 || count0 == 9)
+                {
+                    decouplerCount = 3;
+                }
+
                 var solidFuelMass = count0 * engine0.FuelMass;
-                var engines0Mass = count0 * engine0.Mass + 2f * mDecoupler.Mass;
+                var engines0Mass = count0 * engine0.Mass + decouplerCount * decoupler.Mass;
                 var stage0MassMin = mass1Start + engines0Mass + solidFuelMass;
 
                 var thrust0Max = count0 * engine0.ThrustAtOneAtmosphere + count1 * engine1.ThrustAtOneAtmosphere;
@@ -109,7 +133,7 @@ public class AssembliesIterator
                 var liquidFuelTankMass0 = mass0Start - stage0MassMin;
                 var liquidFuelMass0 = liquidFuelTankMass0 / Constants.FuelMassToFuelTankMass;
                 var mass0End = mass0Start - liquidFuelMass0 - solidFuelMass;
-                var stage0Cost = count0 * engine0.Cost + liquidFuelMass0 * Constants.FuelMassToCost + 2f * mDecoupler.Cost;
+                var stage0Cost = count0 * engine0.Cost + liquidFuelMass0 * Constants.FuelMassToCost + decouplerCount * decoupler.Cost;
                 var impulse0 = (solidFuelMass * count0 * engine0.ImpulseAtOneAtmosphere + liquidFuelMass0 * engine1.ImpulseAtOneAtmosphere) /
                     (solidFuelMass * count0 + liquidFuelMass0);
 
@@ -122,17 +146,20 @@ public class AssembliesIterator
 
                 assembly.Engine0Count = count0;
 
-                //TODO Пометить сборки с большим количеством деталей
-                //TODO Проверить сборки с тремя ускорителями количеством деталей
-                //TODO Отбросить несимметричные сборки
-
-                if (assembly.DeltaV > Constants.MinKerbinDeltaV && assembly.Cost < BestCost * mMaximumCostExcess)
+                if (assembly.DeltaV0 > Constants.MinKerbinDeltaV * mMinimumFirstStageDeltaV && 
+                    assembly.DeltaV > Constants.MinKerbinDeltaV && 
+                    IsCheep(assembly))
                 {
                     BestCost = Mathf.Min(BestCost, assembly.Cost);
                     Assemblies.Add(assembly);
                 };
             }
         }
+    }
+
+    private bool IsCheep(LiquidSolidClassicEngineAssembly assembly)
+    {
+        return assembly.Cost < BestCost * mMaximumCostExcessMultiplayer + mMaximumCostExcessAddition;
     }
 
     private static float GetQuadraticEquationRoot(float a, float b, float c, float min, float max)

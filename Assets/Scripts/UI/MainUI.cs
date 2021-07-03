@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
-    private AssembliesIterator mAssembliesIterator = new AssembliesIterator();
+    private LiquidSolidIterator mAssembliesIterator = new LiquidSolidIterator();
     private List<AssemblyDrawer> mAssemblyDrawers = new List<AssemblyDrawer>();
 
     [SerializeField] private Toggle mAllTechs;
