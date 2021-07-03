@@ -10,15 +10,28 @@ public class Engine : Part
     [Label("Thrust at vacuum, kN")]
     public float Thrust;
 
-    public float ThrustAtOneAtmosphere => Thrust * ImpulseAtOneAtmosphere / Impulse;
+    /// <summary>
+    /// Thrust at vacuum, N
+    /// </summary>
+    public float ThrustVacuum => 1000f * Thrust;
 
     /// <summary>
-    /// Fuel Consumption, kg/s
+    /// Thrust at one atmosphere, N
+    /// </summary>
+    public float ThrustAtOneAtmosphere => ThrustVacuum * ImpulseAtOneAtmosphere / Impulse;
+
+    /// <summary>
+    /// Fuel consumption, kg/s
     /// </summary>
     public float FuelConsumption => 1000f * Thrust / ImpulseByMass;
 
     /// <summary>
-    /// Specific impulse, s
+    /// Fuel consumption impulse, kg
+    /// </summary>
+    public float FuelConsumptionImpulse => 1000f * Thrust / Constants.g;
+
+    /// <summary>
+    /// Specific impulse at vacuum, s
     /// </summary>
     [Label("Specific impulse, s")]
     public float Impulse;
@@ -60,13 +73,5 @@ public class Engine : Part
     public float GetImpulseByMass(Stage stage)
     {
         return stage == Stage.Second ? ImpulseByMass : ImpulseByMassAtOneAtmosphere;
-    }
-
-    /// <summary>
-    /// Thrust, kN
-    /// </summary>
-    public float GetThrust(Stage stage)
-    {
-        return stage == Stage.Second ? Thrust : ThrustAtOneAtmosphere;
     }
 }

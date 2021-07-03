@@ -16,4 +16,9 @@ public class Part : ScriptableObject
     {
         return Resources.FindObjectsOfTypeAll<Part>();
     }
+
+    public static T[] GetAll<T>() where T : Part
+    {
+        return Resources.FindObjectsOfTypeAll<T>();
+    }
 }

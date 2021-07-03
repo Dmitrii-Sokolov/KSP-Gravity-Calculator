@@ -7,7 +7,7 @@ public class Tester : MonoBehaviour
     public static void Test()
     {
         var techs = Technology.GetAll();
-        var parts = Part.GetAll();
+        var parts = Part.GetAll().OfType<Engine>();
 
         foreach (var part in parts)
         {
