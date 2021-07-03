@@ -11,7 +11,7 @@ public class AssembliesIterator
 {
     private const float mMaxMillisecondsPerFrame = 20;
     private const float mMaxAttemptsPerFrame = 10;
-    private const float mMaximumCostExcess = 1.2f;
+    //private const float mMaximumCostExcess = 1.2f;
     private const float mMaximumDeltaVLack = 0.90f;
     private const int mMaximumEnginesPerStage = 8;
 
@@ -21,10 +21,10 @@ public class AssembliesIterator
     private List<SolidFuelEngine> mSolidFuelEngines = new List<SolidFuelEngine>();
     private Decoupler mDecoupler;
 
-    public float Payload { get; set; }
-    public List<Technology> Technologies { get; set; }
-    public bool UseAllTechnologies { get; set; }
-    public bool UseRandfomization { get; set; }
+    public float Payload { get; set; } = 1000f;
+    public List<Technology> Technologies { get; set; } = new List<Technology>();
+    public bool UseAllTechnologies { get; set; } = true;
+    public bool UseRandomization { get; set; } = false;
 
     public ObservableCollection<LiquidSolidClassicEngineAssembly> Assemblies { get; } = new ObservableCollection<LiquidSolidClassicEngineAssembly>();
     public float BestCost { get; set; }
@@ -56,7 +56,7 @@ public class AssembliesIterator
         foreach (var tech in Technologies)
             mEngines.AddRange(tech.Parts.OfType<Engine>());
 
-        if (UseRandfomization)
+        if (UseRandomization)
         {
             var random = new System.Random();
             mEngines = mEngines.OrderBy(_ => random.Next()).ToList();
@@ -133,7 +133,6 @@ public class AssembliesIterator
                 var maxThrust0 = count0 * engine0.ThrustAtOneAtmosphere + count1 * engine1.ThrustAtOneAtmosphere;
                 var engines0Mass = count0 * engine0.Mass + 2f * mDecoupler.Mass;
 
-                //2 * mDecoupler.Cost
                 var liquidFuelTankMass0Pattern = liquidFuelConsumption * engine0.BurnTime * Constants.FuelMassToFuelTankMass;
                 var mass0StartPattern = mass1Start + engines0Mass + solidFuelMass + liquidFuelTankMass0Pattern;
                 var patternTWR = maxThrust0 / (mass0StartPattern * Constants.g);
@@ -194,7 +193,8 @@ public class AssembliesIterator
 
     private void CheckAssembly(LiquidSolidClassicEngineAssembly assembly)
     {
-        if (assembly.DeltaV > Constants.MinTWR * mMaximumDeltaVLack && assembly.Cost < BestCost * mMaximumCostExcess)
+        //if (assembly.DeltaV > Constants.MinTWR * mMaximumDeltaVLack && assembly.Cost < BestCost * mMaximumCostExcess)
+        if (assembly.DeltaV > Constants.MinTWR * mMaximumDeltaVLack)
         {
             BestCost = Mathf.Min(BestCost, assembly.Cost);
             Assemblies.Add(assembly);
@@ -211,6 +211,6 @@ public class AssembliesIterator
             ? x0
             : !(min < x0 && x0 < max) && min < x1 && x1 < max
                 ? x1 
-                : throw new ArgumentException();
+                : throw new ArgumentException($"Values : {x0} {x1}");
     }
 }
