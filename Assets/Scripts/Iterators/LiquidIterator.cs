@@ -30,7 +30,13 @@ public class LiquidIterator : IteratorBase
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
-        var minimumEnginesCount = Mathf.CeilToInt(assembly.Mass / (engine.GetThrust(isAtmosphereExists) / Constants.MinAcceleration - engine.Mass));
+        var atmosphere = !isAtmosphereExists
+            ? 0f
+            : assembly.Stages.Count == 0
+                ? 0.5f
+                : 1f;
+
+        var minimumEnginesCount = Mathf.CeilToInt(assembly.Mass / (engine.GetThrust(atmosphere) / Constants.MinAcceleration - engine.Mass));
         minimumEnginesCount = Mathf.Max(minimumEnginesCount, 1);
         for (var count = minimumEnginesCount; count < mMaximumEnginesPerStage + 1; count++)
         {
@@ -46,9 +52,8 @@ public class LiquidIterator : IteratorBase
             }
             else if (count == 1)
             {
-                //TODO Учесть систему 1+1
-                //TODO Учесть одноступенчатую систему (считать импульс средним)
-                //TODO Проверить, что  расчёт корректны
+                //TODO Учесть систему 1+1 и другие частные случаи
+                //TODO UI для трёх ступеней
 
                 decouplerCount = 1;
                 decoupler = mStraightDecoupler;
@@ -59,15 +64,15 @@ public class LiquidIterator : IteratorBase
             }
 
             var enginesMass = count * engine.Mass + decouplerCount * decoupler.Mass;
-            var thrust = count * engine.GetThrust(isAtmosphereExists);
+            var thrust = count * engine.GetThrust(atmosphere);
             var liquidFuelConsumption = count * engine.FuelConsumption;
-            var liquidFuelConsumptionImpulse = count * engine.GetFuelConsumptionImpulse(isAtmosphereExists);
+            var liquidFuelConsumptionImpulse = count * engine.GetFuelConsumptionImpulse(atmosphere);
 
             foreach (var stage in assembly.Stages)
             {
-                thrust += stage.EngineCount * stage.Engine.GetThrust(isAtmosphereExists);
+                thrust += stage.EngineCount * stage.Engine.GetThrust(atmosphere);
                 liquidFuelConsumption += stage.EngineCount * stage.Engine.FuelConsumption;
-                liquidFuelConsumptionImpulse += stage.EngineCount * stage.Engine.GetFuelConsumptionImpulse(isAtmosphereExists);
+                liquidFuelConsumptionImpulse += stage.EngineCount * stage.Engine.GetFuelConsumptionImpulse(atmosphere);
             }
 
             var massStart = thrust / Constants.MinAcceleration;
@@ -90,7 +95,7 @@ public class LiquidIterator : IteratorBase
             var stageDeltaV = stageImpulse * Constants.g * Mathf.Log(massStart / massEnd);
 
             newAssembly.DeltaV += stageDeltaV;
-            newAssembly.Mass += massStart;
+            newAssembly.Mass = massStart;
             newAssembly.Stages.Add(new LiquidEngineAssembly.LiquidEngineStage()
             {
                 Engine = engine,

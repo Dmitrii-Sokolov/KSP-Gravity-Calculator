@@ -27,7 +27,7 @@ public class AssemblyDrawer : MonoBehaviour
                 mFuelDrawer.Init(lea.Stages[lea.Stages.Count - 1].LiquidFuelTankMass, lea.Stages[lea.Stages.Count - 1].DeltaV);
                 for (var i = lea.Stages.Count - 2; i >= 0; i--)
                 {
-                    var fuelDrawer = Instantiate(mFuelDrawer, mEngineDrawer.transform.parent);
+                    var fuelDrawer = Instantiate(mFuelDrawer, mFuelDrawer.transform.parent);
                     fuelDrawer.transform.SetAsLastSibling();
                     fuelDrawer.Init(lea.Stages[i].LiquidFuelTankMass, lea.Stages[i].DeltaV);
                 }
@@ -41,7 +41,7 @@ public class AssemblyDrawer : MonoBehaviour
                 mEngineDrawer.Init(lsea.Engine1Count, lsea.Engine1);
 
                 mFuelDrawer.Init(lsea.LiquidFuelTankMass0, lsea.DeltaV0);
-                var fuelDrawer1 = Instantiate(mFuelDrawer, mEngineDrawer.transform.parent);
+                var fuelDrawer1 = Instantiate(mFuelDrawer, mFuelDrawer.transform.parent);
                 fuelDrawer1.transform.SetAsLastSibling();
                 fuelDrawer1.Init(lsea.LiquidFuelTankMass1, lsea.DeltaV1);
                 break;
