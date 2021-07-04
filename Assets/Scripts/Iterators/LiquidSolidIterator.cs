@@ -1,80 +1,39 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class LiquidSolidIterator
+public class LiquidSolidIterator : IteratorBase
 {
-    private const float mMaximumCostExcessMultiplayer = 1.25f;
-    private const float mMaximumCostExcessAddition = 1000f;
-    private const float mMinimumFirstStageDeltaV = 0.15f;
-    private const int mMaximumEnginesPerStage = 9;
-    private const int mMaximumAssembliesOnScreen = 30;
-
-    private List<Engine> mEngines = new List<Engine>();
-    private List<Engine> mLiquidFuelEngines = new List<Engine>();
-    private List<SolidFuelEngine> mSolidFuelEngines = new List<SolidFuelEngine>();
-
-    private Decoupler mRadialDecoupler;
-    private Decoupler mStraightDecoupler;
-
-    public float Payload { get; set; } = 1000f;
-    public List<Technology> Technologies { get; set; } = new List<Technology>();
-    public bool UseAllTechnologies { get; set; } = true;
-
-    public List<LiquidSolidClassicEngineAssembly> Assemblies { get; private set; } = new List<LiquidSolidClassicEngineAssembly>();
-    public float BestCost { get; set; }
-
-    public void Calculate()
+    protected override void FillAssembliesList()
     {
-        //TODO Ж-Ж итератор
-        //TODO Расчёт двигателей для полезной нагрузки
+        var engines0 = Technologies.SelectMany(tech => tech.Parts.OfType<SolidFuelEngine>());
+        var engines1 = Technologies.SelectMany(tech => tech.Parts.OfType<Engine>()).Where(engine => !engine.Fixed && engine.Fuel == FuelType.RocketPropellant || engine.Fuel == FuelType.LiquidFuel);
 
-        Assemblies.Clear();
-        BestCost = float.PositiveInfinity;
-
-        if (UseAllTechnologies)
-            Technologies = Technology.GetAll().ToList();
-
-        mEngines.Clear();
-        foreach (var tech in Technologies)
-            mEngines.AddRange(tech.Parts.OfType<Engine>());
-
-        mLiquidFuelEngines.Clear();
-        mLiquidFuelEngines.AddRange(mEngines.Where(engine => !engine.Fixed && !(engine is SolidFuelEngine) && engine.Fuel == FuelType.RocketPropellant));
-
-        mSolidFuelEngines.Clear();
-        mSolidFuelEngines.AddRange(mEngines.OfType<SolidFuelEngine>());
-
-        mRadialDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TT-70");
-        mStraightDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TD-12");
-
-        foreach (var engine0 in mSolidFuelEngines)
+        foreach (var engine0 in engines0)
         {
-            foreach (var engine1 in mLiquidFuelEngines)
+            foreach (var engine1 in engines1)
                 TryUseEngines(engine0, engine1, Payload);
         }
-
-        Assemblies = Assemblies.Where(IsCheep).OrderBy(set => set.Cost).Take(mMaximumAssembliesOnScreen).ToList();
     }
 
     private void TryUseEngines(SolidFuelEngine engine0, Engine engine1, float payload)
     {
-        var assembly = new LiquidSolidClassicEngineAssembly();
+        var assembly = new LiquidSolidTwoStageEngineAssembly();
         assembly.Engine0 = engine0;
         assembly.Engine1 = engine1;
 
-        var minimumSecondStageEnginesCount = Mathf.CeilToInt(Payload / (engine1.ThrustVacuum / Constants.MinAcceleration - engine1.Mass));
+        var minimumSecondStageEnginesCount = Mathf.CeilToInt(payload / (engine1.ThrustVacuum / Constants.MinAcceleration - engine1.Mass));
+        minimumSecondStageEnginesCount = Mathf.Max(minimumSecondStageEnginesCount, 1);
         for (var count1 = minimumSecondStageEnginesCount; count1 < mMaximumEnginesPerStage + 1; count1++)
         {
             if (engine1.RadialMountedOnly && count1 == 1)
                 continue;
 
             var thrust1 = count1 * engine1.ThrustVacuum;
-            var engines1mass = count1 * engine1.Mass;
+            var engines1Mass = count1 * engine1.Mass;
             var liquidFuelConsumption = count1 * engine1.FuelConsumption;
             var mass1Start = thrust1 / Constants.MinAcceleration;
-            var liquidFuelTankMass1 = mass1Start - engines1mass - payload;
+            var liquidFuelTankMass1 = mass1Start - engines1Mass - payload;
             if (engine1 is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count1 > liquidFuelTankMass1)
                 continue;
 
@@ -90,7 +49,6 @@ public class LiquidSolidIterator
             var count0Min  = Mathf.CeilToInt(
                 -(Constants.MinAcceleration * mass1Start - count1 * engine1.ThrustAtOneAtmosphere) /
                 (Constants.MinAcceleration * (engine0.Mass + engine0.FuelMass) - engine0.ThrustAtOneAtmosphere));
-            count0Min = Mathf.Max(count0Min, count1 == 1 ? 2 : 1);
 
             for (var count0 = count0Min; count0 < mMaximumEnginesPerStage + 1; count0++)
             {
@@ -103,6 +61,9 @@ public class LiquidSolidIterator
                 }
                 else if (count0 == 1)
                 {
+                    if (count1 == 1)
+                        continue;
+
                     decouplerCount = 1;
                     decoupler = mStraightDecoupler;
                 }
@@ -146,20 +107,13 @@ public class LiquidSolidIterator
 
                 assembly.Engine0Count = count0;
 
-                if (assembly.DeltaV0 > Constants.MinKerbinDeltaV * mMinimumFirstStageDeltaV && 
-                    assembly.DeltaV > Constants.MinKerbinDeltaV && 
-                    IsCheep(assembly))
+                if (IsDeltaVEnough(assembly.DeltaV0, assembly.DeltaV) && IsCheep(assembly))
                 {
                     BestCost = Mathf.Min(BestCost, assembly.Cost);
                     Assemblies.Add(assembly);
                 };
             }
         }
-    }
-
-    private bool IsCheep(LiquidSolidClassicEngineAssembly assembly)
-    {
-        return assembly.Cost < BestCost * mMaximumCostExcessMultiplayer + mMaximumCostExcessAddition;
     }
 
     private static float GetQuadraticEquationRoot(float a, float b, float c, float min, float max)

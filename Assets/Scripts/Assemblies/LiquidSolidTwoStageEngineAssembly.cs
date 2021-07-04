@@ -1,4 +1,4 @@
-public struct LiquidSolidClassicEngineAssembly
+public struct LiquidSolidTwoStageEngineAssembly : IEngineAssembly
 {
     public SolidFuelEngine Engine0;
     public int Engine0Count;
@@ -10,12 +10,12 @@ public struct LiquidSolidClassicEngineAssembly
     public float LiquidFuelTankMass0;
     public float LiquidFuelTankMass1;
 
-    public float DeltaV;
-    public float Cost;
-
     public float DeltaV0;
     public float DeltaV1;
 
     public float Time0;
     public float Time1;
+
+    public float DeltaV { get; set; }
+    public float Cost { get; set; }
 }

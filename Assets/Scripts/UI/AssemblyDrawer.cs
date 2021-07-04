@@ -1,69 +1,53 @@
-using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AssemblyDrawer : MonoBehaviour
 {
-    private static NumberFormatInfo mFormat;
-   
-    [SerializeField] private Text mEngine0Count;
-    [SerializeField] private Image mEngine0Image;
-    [SerializeField] private Text mEngine0Alias;
-    [SerializeField] private Text mEngine0Rate;
-
-    [SerializeField] private Text mEngine1Count;
-    [SerializeField] private Image mEngine1Image;
-    [SerializeField] private Text mEngine1Alias;
-
-    [SerializeField] private Text mLiquidFuelTankMass0;
-    [SerializeField] private Text mLiquidFuelTankMass1;
-
+    [SerializeField] private EngineDrawer mEngineDrawer;
     [SerializeField] private Text mDeltaV;
     [SerializeField] private Text mCost;
+    [SerializeField] private FuelDrawer mFuelDrawer;
 
-    [SerializeField] private Text mDeltaV0;
-    [SerializeField] private Text mDeltaV1;
-
-    [SerializeField] private Text mTime0;
-    [SerializeField] private Text mTime1;
-
-    private static NumberFormatInfo Format
+    public void Init(IEngineAssembly assembly)
     {
-        get
+        mDeltaV.text = assembly.DeltaV.ToString("N", Locale.Format) + "m/s";
+        mCost.text = assembly.Cost.ToString("N", Locale.Format);
+
+        switch (assembly)
         {
-            if (mFormat == null)
-            {
-                mFormat = new NumberFormatInfo();
-                mFormat.NumberDecimalSeparator = ".";
-                mFormat.NumberGroupSeparator = " ";
-                mFormat.NumberGroupSizes = new int[1] { 3 };
-                mFormat.NumberDecimalDigits = 0;
-            }
-            return mFormat;
+            case LiquidEngineAssembly lea:
+                mEngineDrawer.Init(lea.Stages[0].EngineCount, lea.Stages[0].Engine);
+                for (var i = 1; i < lea.Stages.Count; i++)
+                {
+                    var engineDrawer = Instantiate(mEngineDrawer, mEngineDrawer.transform.parent);
+                    engineDrawer.transform.SetAsFirstSibling();
+                    engineDrawer.Init(lea.Stages[i].EngineCount, lea.Stages[i].Engine);
+                }
+
+                mFuelDrawer.Init(lea.Stages[lea.Stages.Count - 1].LiquidFuelTankMass, lea.Stages[lea.Stages.Count - 1].DeltaV);
+                for (var i = lea.Stages.Count - 2; i >= 0; i--)
+                {
+                    var fuelDrawer = Instantiate(mFuelDrawer, mEngineDrawer.transform.parent);
+                    fuelDrawer.transform.SetAsLastSibling();
+                    fuelDrawer.Init(lea.Stages[i].LiquidFuelTankMass, lea.Stages[i].DeltaV);
+                }
+
+                break;
+
+            case LiquidSolidTwoStageEngineAssembly lsea:
+                var engineDrawer0 = Instantiate(mEngineDrawer, mEngineDrawer.transform.parent);
+                engineDrawer0.transform.SetAsFirstSibling();
+                engineDrawer0.Init(lsea.Engine0Count, lsea.Engine0, lsea.Engine0Rate);
+                mEngineDrawer.Init(lsea.Engine1Count, lsea.Engine1);
+
+                mFuelDrawer.Init(lsea.LiquidFuelTankMass0, lsea.DeltaV0);
+                var fuelDrawer1 = Instantiate(mFuelDrawer, mEngineDrawer.transform.parent);
+                fuelDrawer1.transform.SetAsLastSibling();
+                fuelDrawer1.Init(lsea.LiquidFuelTankMass1, lsea.DeltaV1);
+                break;
+
+            default:
+                break;
         }
-    }
-
-    public void Init(LiquidSolidClassicEngineAssembly assembly)
-    {
-        mEngine0Count.text = assembly.Engine0Count.ToString();
-        mEngine0Image.sprite = assembly.Engine0.Sprite;
-        mEngine0Alias.text = assembly.Engine0.Alias;
-        mEngine0Rate.text = (100f * assembly.Engine0Rate).ToString("N", Format);
-
-        mEngine1Count.text = assembly.Engine1Count.ToString();
-        mEngine1Image.sprite = assembly.Engine1.Sprite;
-        mEngine1Alias.text = assembly.Engine1.Alias;
-
-        mLiquidFuelTankMass0.text = assembly.LiquidFuelTankMass0.ToString("N", Format) + "kg";
-        mLiquidFuelTankMass1.text = assembly.LiquidFuelTankMass1.ToString("N", Format) + "kg";
-
-        mDeltaV.text = assembly.DeltaV.ToString("N", Format) + "m/s";
-        mCost.text = assembly.Cost.ToString("N", Format);
-
-        mDeltaV0.text = assembly.DeltaV0.ToString("N", Format) + "m/s";
-        mDeltaV1.text = assembly.DeltaV1.ToString("N", Format) + "m/s";
-
-        mTime0.text = assembly.Time0.ToString("N", Format) + "s";
-        mTime1.text = assembly.Time1.ToString("N", Format) + "s";
     }
 }

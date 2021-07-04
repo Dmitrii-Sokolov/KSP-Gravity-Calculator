@@ -23,12 +23,17 @@ public class Engine : Part
     /// <summary>
     /// Fuel consumption, kg/s
     /// </summary>
-    public float FuelConsumption => 1000f * Thrust / ImpulseByMass;
+    public float FuelConsumption => ThrustVacuum / ImpulseByMass;
 
     /// <summary>
     /// Fuel consumption impulse, kg
     /// </summary>
-    public float FuelConsumptionImpulse => 1000f * Thrust / Constants.g;
+    public float FuelConsumptionImpulseVacuum => ThrustVacuum / Constants.g;
+
+    /// <summary>
+    /// Fuel consumption impulse, kg
+    /// </summary>
+    public float FuelConsumptionImpulseAtOneAtmosphere => ThrustVacuum * ImpulseAtOneAtmosphere / Impulse / Constants.g;
 
     /// <summary>
     /// Specific impulse at vacuum, s
@@ -58,4 +63,14 @@ public class Engine : Part
     public bool RadialMountedOnly;
 
     public FuelType Fuel;
+
+    public float GetThrust(bool isAtmosphereExists)
+    {
+        return isAtmosphereExists ? ThrustAtOneAtmosphere : ThrustVacuum;
+    }
+
+    public float GetFuelConsumptionImpulse(bool isAtmosphereExists)
+    {
+        return isAtmosphereExists ? FuelConsumptionImpulseAtOneAtmosphere : FuelConsumptionImpulseVacuum;
+    }
 }
