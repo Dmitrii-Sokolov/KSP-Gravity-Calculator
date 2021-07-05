@@ -8,12 +8,11 @@ public class EngineDrawer : MonoBehaviour
     [SerializeField] private Text mEngineRate;
     [SerializeField] private Text mEngineAlias;
 
-    public void Init(int engineCount, Engine engine, float rate = 0f)
+    public void Init(int engineCount, Engine engine, float rate = 1f)
     {
         mEngineCount.text = engineCount.ToString();
         mEngineImage.sprite = engine.Sprite;
         mEngineAlias.text = engine.Alias;
-        mEngineRate.text = (100f * rate).ToString("N", Locale.Format);
-        mEngineRate.gameObject.SetActive(rate > 0f);
+        mEngineRate.text = rate == 1f ? string.Empty : (100f * rate).ToString("N", Locale.Format);
     }
 }
