@@ -47,6 +47,11 @@ public abstract class IteratorBase
         return assembly.Cost < BestCost * mMaximumCostExcessMultiplayer + mMaximumCostExcessAddition;
     }
 
+    protected bool IsDeltaVEnough(float stageDeltaV)
+    {
+        return stageDeltaV > Constants.MinKerbinDeltaV * mMinimumFirstStageDeltaV;
+    }
+
     protected bool IsDeltaVEnough(float firstStageDeltaV, float allStagesDeltaV)
     {
         return firstStageDeltaV > Constants.MinKerbinDeltaV * mMinimumFirstStageDeltaV && allStagesDeltaV > Constants.MinKerbinDeltaV;

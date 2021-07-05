@@ -49,8 +49,6 @@ public class LiquidIterator : IteratorBase
             }
             else if (count == 1)
             {
-                //TODO Учесть систему 1+1 и другие частные случаи
-
                 decouplerCount = 1;
                 decoupler = mStraightDecoupler;
             }
@@ -59,27 +57,39 @@ public class LiquidIterator : IteratorBase
                 decouplerCount = 3;
             }
 
-            var enginesMass = count * engine.Mass + decouplerCount * decoupler.Mass;
-            var thrust = count * engine.GetThrust(startAtmosphere);
-            var liquidFuelConsumption = count * engine.FuelConsumption;
-            var liquidFuelConsumptionImpulse = count * engine.GetFuelConsumptionImpulse(averageAtmosphere);
+            var newAssembly = assembly.GetCopy();
+            newAssembly.AddDraft(engine, count);
 
-            foreach (var stage in assembly.Stages)
+            var thrust = 0f;
+            var liquidFuelConsumption = 0f;
+            var liquidFuelConsumptionImpulse = 0f;
+            var oneEnginePerStage = false;
+
+            for (var i = newAssembly.Stages.Count - 1; i >= 0; i--)
             {
+                var stage = newAssembly.Stages[i];
+                //Если более чем на одной ступени ровно один двигатель, то работает только самая нижняя из таких
+                if (stage.EngineCount == 1)
+                {
+                    if (oneEnginePerStage)
+                        continue;
+                    oneEnginePerStage = true;
+                }
+
                 thrust += stage.EngineCount * stage.Engine.GetThrust(startAtmosphere);
                 liquidFuelConsumption += stage.EngineCount * stage.Engine.FuelConsumption;
                 liquidFuelConsumptionImpulse += stage.EngineCount * stage.Engine.GetFuelConsumptionImpulse(averageAtmosphere);
             }
 
             var massStart = thrust / Constants.MinAcceleration;
-            var liquidFuelTankMass = massStart - enginesMass - assembly.Mass;
+            var enginesMass = count * engine.Mass + decouplerCount * decoupler.Mass;
+            var liquidFuelTankMass = massStart - enginesMass - newAssembly.Mass;
+
             if (engine is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count > liquidFuelTankMass)
                 continue;
 
             var liquidFuelMass = liquidFuelTankMass / Constants.FuelMassToFuelTankMass;
             var stageCost = count * engine.Cost + liquidFuelMass * Constants.FuelMassToCost + decouplerCount * decoupler.Cost;
-
-            var newAssembly = assembly.GetCopy();
             newAssembly.Cost += stageCost;
 
             if (!IsCheep(newAssembly))
@@ -92,14 +102,7 @@ public class LiquidIterator : IteratorBase
 
             newAssembly.DeltaV += stageDeltaV;
             newAssembly.Mass = massStart;
-            newAssembly.Stages.Add(new LiquidEngineAssembly.LiquidEngineStage()
-            {
-                Engine = engine,
-                EngineCount = count,
-                LiquidFuelTankMass = liquidFuelTankMass,
-                DeltaV = stageDeltaV,
-                Time = stageTime,
-            });
+            newAssembly.SetCurrentStageData(liquidFuelTankMass, stageDeltaV, stageTime);
 
             if (isAtmosphereExists)
             {
@@ -111,7 +114,8 @@ public class LiquidIterator : IteratorBase
             }
             else
             {
-                TryUseEngines(ref newAssembly);
+                if (IsDeltaVEnough(stageDeltaV))
+                    TryUseEngines(ref newAssembly);
             }
         }
     }
