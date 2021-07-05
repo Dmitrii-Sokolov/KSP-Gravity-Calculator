@@ -23,12 +23,9 @@ public class LiquidSolidIterator : IteratorBase
         assembly.Engine1 = engine1;
 
         var minimumSecondStageEnginesCount = Mathf.CeilToInt(payload / (engine1.ThrustVacuum / Constants.MinAcceleration - engine1.Mass));
-        minimumSecondStageEnginesCount = Mathf.Max(minimumSecondStageEnginesCount, 1);
-        for (var count1 = minimumSecondStageEnginesCount; count1 < mMaximumEnginesPerStage + 1; count1++)
+        minimumSecondStageEnginesCount = Mathf.Max(minimumSecondStageEnginesCount, engine1.RadialMountedOnly ? 2 : 1);
+        for (var count1 = minimumSecondStageEnginesCount; count1 <= mMaximumEnginesPerStage; count1++)
         {
-            if (engine1.RadialMountedOnly && count1 == 1)
-                continue;
-
             var thrust1 = count1 * engine1.ThrustVacuum;
             var engines1Mass = count1 * engine1.Mass;
             var liquidFuelConsumption = count1 * engine1.FuelConsumption;
@@ -50,7 +47,9 @@ public class LiquidSolidIterator : IteratorBase
                 -(Constants.MinAcceleration * mass1Start - count1 * engine1.ThrustAtOneAtmosphere) /
                 (Constants.MinAcceleration * (engine0.Mass + engine0.FuelMass) - engine0.ThrustAtOneAtmosphere));
 
-            for (var count0 = count0Min; count0 < mMaximumEnginesPerStage + 1; count0++)
+            //TODO Объединить со вторым итератором
+
+            for (var count0 = count0Min; count0 <= mMaximumEnginesPerStage; count0++)
             {
                 var decouplerCount = 2;
                 var decoupler = mRadialDecoupler;

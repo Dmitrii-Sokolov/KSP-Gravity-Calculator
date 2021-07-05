@@ -22,9 +22,7 @@ public abstract class IteratorBase
 
     public void Calculate()
     {
-        //TODO Расчёт двигателей для полезной нагрузки в космосе
-        //TODO Фильтр по технологиям
-        //TODO Сохранения фильтра в реестр
+        //TODO Фильтр по технологиям + сохранение в реестр
 
         Assemblies.Clear();
         BestCost = float.PositiveInfinity;

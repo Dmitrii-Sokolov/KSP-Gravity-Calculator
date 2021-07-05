@@ -33,10 +33,14 @@ public class MainUI : MonoBehaviour
             ? new LiquidSolidIterator()
             : (IteratorBase)new LiquidIterator();
         mCurrentIteratorCaption.text = mAssembliesIterator.GetType().ToString();
+        //TODO UI для рассчётов в вакууме
+        //TODO UI для суммирования
+        //TODO UI для таблицы с двигателями + фильтр + сортировка
     }
 
     void Calculate()
     {
+        //TODO Стартовать рассчёт по окончании ввода
         mAssembliesIterator.UseAllTechnologies = mAllTechs.isOn;
         mAssembliesIterator.Payload = float.Parse(mPayload.text);
 

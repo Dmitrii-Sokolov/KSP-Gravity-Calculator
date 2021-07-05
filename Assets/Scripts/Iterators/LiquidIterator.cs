@@ -7,6 +7,9 @@ public class LiquidIterator : IteratorBase
     private IEnumerable<Engine> mEngines;
     private IEnumerable<Engine> mTopEngines;
 
+    //TODO Сделать UI для одной ступени
+    public bool UseOneStage { get; set; } = false;
+
     protected override void FillAssembliesList()
     {
         mEngines = Technologies.SelectMany(tech => tech.Parts.OfType<Engine>()).Where(engine => engine.Fuel == FuelType.RocketPropellant || engine.Fuel == FuelType.LiquidFuel);
@@ -24,22 +27,23 @@ public class LiquidIterator : IteratorBase
             TryAddStage(ref assembly, engine, true);
 
             //Считаем, что мы ещё в вакууме
-            TryAddStage(ref assembly, engine, false);
+            if (!UseOneStage)
+                TryAddStage(ref assembly, engine, false);
         }
     }
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
+        //TODO Расчёт цены неверен, выяснить насколько и почему
+        //TODO Попробовать добавлять пару разных двигателей
+
         var averageAtmosphere = isAtmosphereExists ? (assembly.Stages.Count == 0 ? 0.5f : 1f) : 0f;
         var startAtmosphere = isAtmosphereExists ? 1f : 0f;
 
         var minimumEnginesCount = Mathf.CeilToInt(assembly.Mass / (engine.GetThrust(startAtmosphere) / Constants.MinAcceleration - engine.Mass));
-        minimumEnginesCount = Mathf.Max(minimumEnginesCount, 1);
-        for (var count = minimumEnginesCount; count < mMaximumEnginesPerStage + 1; count++)
+        minimumEnginesCount = Mathf.Max(minimumEnginesCount, engine.RadialMountedOnly ? 2 : 1);
+        for (var count = minimumEnginesCount; count <= mMaximumEnginesPerStage; count++)
         {
-            if (engine.RadialMountedOnly && count == 1)
-                continue;
-
             var decouplerCount = 2;
             var decoupler = mRadialDecoupler;
 
