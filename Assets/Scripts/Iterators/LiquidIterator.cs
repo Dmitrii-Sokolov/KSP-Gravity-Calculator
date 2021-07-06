@@ -7,7 +7,6 @@ public class LiquidIterator : IteratorBase
     private IEnumerable<Engine> mEngines;
     private IEnumerable<Engine> mTopEngines;
 
-    //TODO Сделать UI для одной ступени
     public bool UseOneStage { get; set; } = false;
 
     protected override void FillAssembliesList()
@@ -87,26 +86,26 @@ public class LiquidIterator : IteratorBase
 
             var massStart = thrust / Constants.MinAcceleration;
             var enginesMass = count * engine.Mass + decouplerCount * decoupler.Mass;
-            var liquidFuelTankMass = massStart - enginesMass - newAssembly.Mass;
+            var reservedMass = massStart - enginesMass - newAssembly.Mass;
+            var (fuelMass, tankMass, fuelCost) = Constants.SplitFuelTank(reservedMass, engine.Fuel);
 
-            if (engine is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count > liquidFuelTankMass)
+            if (engine is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count > tankMass)
                 continue;
 
-            var liquidFuelMass = liquidFuelTankMass / Constants.FuelMassToFuelTankMass;
-            var stageCost = count * engine.Cost + liquidFuelMass * Constants.FuelMassToCost + decouplerCount * decoupler.Cost;
+            var stageCost = count * engine.Cost + fuelCost + decouplerCount * decoupler.Cost;
             newAssembly.Cost += stageCost;
 
             if (!IsCheep(newAssembly))
                 continue;
 
-            var stageTime = liquidFuelMass / liquidFuelConsumption;
+            var stageTime = fuelMass / liquidFuelConsumption;
             var stageImpulse = liquidFuelConsumptionImpulse / liquidFuelConsumption;
-            var massEnd = massStart - liquidFuelMass;
+            var massEnd = massStart - fuelMass;
             var stageDeltaV = stageImpulse * Constants.g * Mathf.Log(massStart / massEnd);
 
             newAssembly.DeltaV += stageDeltaV;
             newAssembly.Mass = massStart;
-            newAssembly.SetCurrentStageData(liquidFuelTankMass, stageDeltaV, stageTime);
+            newAssembly.SetCurrentStageData(fuelMass, tankMass, stageDeltaV, stageTime);
 
             if (isAtmosphereExists)
             {

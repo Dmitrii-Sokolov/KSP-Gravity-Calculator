@@ -7,6 +7,9 @@ public struct LiquidSolidTwoStageEngineAssembly : IEngineAssembly
     public Engine Engine1;
     public int Engine1Count;
 
+    public float LiquidFuelMass0;
+    public float LiquidFuelMass1;
+
     public float LiquidFuelTankMass0;
     public float LiquidFuelTankMass1;
 

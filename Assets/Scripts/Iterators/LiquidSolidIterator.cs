@@ -30,14 +30,16 @@ public class LiquidSolidIterator : IteratorBase
             var engines1Mass = count1 * engine1.Mass;
             var liquidFuelConsumption = count1 * engine1.FuelConsumption;
             var mass1Start = thrust1 / Constants.MinAcceleration;
-            var liquidFuelTankMass1 = mass1Start - engines1Mass - payload;
+            var reservedMass1 = mass1Start - engines1Mass - payload;
+            var (liquidFuelMass1, liquidFuelTankMass1, liquidFuelCost1) = Constants.SplitFuelTank(reservedMass1, engine1.Fuel);
+
             if (engine1 is TwinBoarEngine twinBoar && twinBoar.FuelMassTank * count1 > liquidFuelTankMass1)
                 continue;
 
-            var liquidFuelMass1 = liquidFuelTankMass1 / Constants.FuelMassToFuelTankMass;
             var mass1End = mass1Start - liquidFuelMass1;
-            var stage1Cost = count1 * engine1.Cost + liquidFuelMass1 * Constants.FuelMassToCost;
+            var stage1Cost = count1 * engine1.Cost + liquidFuelCost1;
 
+            assembly.LiquidFuelMass1 = liquidFuelMass1;
             assembly.LiquidFuelTankMass1 = liquidFuelTankMass1;
             assembly.Engine1Count = count1;
             assembly.Time1 = liquidFuelMass1 / liquidFuelConsumption;
@@ -76,7 +78,7 @@ public class LiquidSolidIterator : IteratorBase
                 var stage0MassMin = mass1Start + engines0Mass + solidFuelMass;
 
                 var thrust0Max = count0 * engine0.ThrustAtOneAtmosphere + count1 * engine1.ThrustAtOneAtmosphere;
-                var liquidFuelTankMass0AtMaxThrust = engine0.BurnTime * liquidFuelConsumption * Constants.FuelMassToFuelTankMass;
+                var liquidFuelTankMass0AtMaxThrust = engine0.BurnTime * liquidFuelConsumption * Constants.FuelMassToTankMass(engine1.Fuel);
                 var acceleration0Max = thrust0Max / (stage0MassMin + liquidFuelTankMass0AtMaxThrust);
 
                 var rate = acceleration0Max < Constants.MinAcceleration
@@ -84,16 +86,16 @@ public class LiquidSolidIterator : IteratorBase
                     : GetQuadraticEquationRoot(
                         count0 * engine0.ThrustAtOneAtmosphere,
                         count1 * engine1.ThrustAtOneAtmosphere - Constants.MinAcceleration * stage0MassMin,
-                        -Constants.MinAcceleration * liquidFuelConsumption * Constants.FuelMassToFuelTankMass * engine0.BurnTime,
+                        -Constants.MinAcceleration * liquidFuelConsumption * Constants.FuelMassToTankMass(engine1.Fuel) * engine0.BurnTime,
                         0f,
                         1f);
 
                 var thrust = rate * count0 * engine0.ThrustAtOneAtmosphere + count1 * engine1.ThrustAtOneAtmosphere;
                 var mass0Start = thrust / Constants.MinAcceleration;
-                var liquidFuelTankMass0 = mass0Start - stage0MassMin;
-                var liquidFuelMass0 = liquidFuelTankMass0 / Constants.FuelMassToFuelTankMass;
+                var reservedMass0 = mass0Start - stage0MassMin;
+                var (liquidFuelMass0, liquidFuelTankMass0, liquidFuelCost0) = Constants.SplitFuelTank(reservedMass0, engine1.Fuel);
                 var mass0End = mass0Start - liquidFuelMass0 - solidFuelMass;
-                var stage0Cost = count0 * engine0.Cost + liquidFuelMass0 * Constants.FuelMassToCost + decouplerCount * decoupler.Cost;
+                var stage0Cost = count0 * engine0.Cost + liquidFuelCost0 + decouplerCount * decoupler.Cost;
                 var impulse0 = (solidFuelMass * count0 * engine0.ImpulseAtOneAtmosphere + liquidFuelMass0 * engine1.ImpulseAtOneAtmosphere) /
                     (solidFuelMass * count0 + liquidFuelMass0);
 
@@ -102,6 +104,7 @@ public class LiquidSolidIterator : IteratorBase
                 assembly.Cost = stage0Cost + stage1Cost;
                 assembly.DeltaV = assembly.DeltaV0 + assembly.DeltaV1;
                 assembly.Engine0Rate = rate;
+                assembly.LiquidFuelMass0 = liquidFuelMass0;
                 assembly.LiquidFuelTankMass0 = liquidFuelTankMass0;
 
                 assembly.Engine0Count = count0;

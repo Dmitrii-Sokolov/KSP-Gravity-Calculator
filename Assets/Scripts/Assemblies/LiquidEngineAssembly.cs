@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 public struct LiquidEngineAssembly : IEngineAssembly
 {
@@ -7,6 +6,7 @@ public struct LiquidEngineAssembly : IEngineAssembly
     {
         public Engine Engine;
         public int EngineCount;
+        public float LiquidFuelMass;
         public float LiquidFuelTankMass;
         public float DeltaV;
         public float Time;
@@ -35,9 +35,10 @@ public struct LiquidEngineAssembly : IEngineAssembly
         });
     }
 
-    public void SetCurrentStageData(float liquidFuelTankMass, float stageDeltaV, float stageTime)
+    public void SetCurrentStageData(float liquidFuelMass, float liquidFuelTankMass, float stageDeltaV, float stageTime)
     {
         var stage = Stages[Stages.Count - 1];
+        stage.LiquidFuelMass = liquidFuelMass;
         stage.LiquidFuelTankMass = liquidFuelTankMass;
         stage.DeltaV = stageDeltaV;
         stage.Time = stageTime;

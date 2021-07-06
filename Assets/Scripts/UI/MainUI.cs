@@ -4,56 +4,75 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
-    private IteratorBase mAssembliesIterator = new LiquidIterator();
+    private bool mShowFuelMass = false;
+    private LiquidIterator mLiquidIterator = new LiquidIterator();
+    private LiquidSolidIterator mLiquidSolidIterator = new LiquidSolidIterator();
     private List<AssemblyDrawer> mAssemblyDrawers = new List<AssemblyDrawer>();
 
     [SerializeField] private Toggle mAllTechs;
+    [SerializeField] private Toggle mSingleStage;
+    [SerializeField] private Button mSwitchFuel;
+    [SerializeField] private Text mSwitchFuelText;
     [SerializeField] private InputField mPayload;
-    [SerializeField] private Button mCalculate;
-    [SerializeField] private Button mIteratorChange;
-    [SerializeField] private Text mCurrentIteratorCaption;
 
     [Space]
-    [SerializeField] private Transform mTableRoot;
+    [SerializeField] private Transform mLiquidRoot;
+    [SerializeField] private Transform mSolidRoot;
     [SerializeField] private AssemblyDrawer mAssemblyDrawerPrefab;
 
     [Space]
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
+    //TODO UI для рассчётов в вакууме
+    //TODO UI для суммирования
+    //TODO UI для таблицы с двигателями + фильтр + сортировка
+    //TODO UI для таблицы с топливными баками
+
     void Start()
     {
-        mCurrentIteratorCaption.text = mAssembliesIterator.GetType().ToString();
-        mCalculate.onClick.AddListener(Calculate);
-        mIteratorChange.onClick.AddListener(ChangeIterator);
+        var test = new VacuumIterator();
+        test.Calculate();
+
+        mPayload.onEndEdit.AddListener(_ => Calculate());
+        mSingleStage.onValueChanged.AddListener(_ => Calculate());
+        mSwitchFuel.onClick.AddListener(SwitchFuel);
+        SwitchFuel();
     }
 
-    void ChangeIterator()
+    private void SwitchFuel()
     {
-        mAssembliesIterator = mAssembliesIterator is LiquidIterator
-            ? new LiquidSolidIterator()
-            : (IteratorBase)new LiquidIterator();
-        mCurrentIteratorCaption.text = mAssembliesIterator.GetType().ToString();
-        //TODO UI для рассчётов в вакууме
-        //TODO UI для суммирования
-        //TODO UI для таблицы с двигателями + фильтр + сортировка
+        mShowFuelMass = !mShowFuelMass;
+        mSwitchFuelText.text = mShowFuelMass ? "Fuel Mass" : "Fuel Tank Mass";
+        foreach (var drawer in mAssemblyDrawers)
+            drawer.ShowFuelMass(mShowFuelMass);
     }
-
-    void Calculate()
+    
+    private void Calculate()
     {
-        //TODO Стартовать рассчёт по окончании ввода
-        mAssembliesIterator.UseAllTechnologies = mAllTechs.isOn;
-        mAssembliesIterator.Payload = float.Parse(mPayload.text);
-
         foreach (var drawer in mAssemblyDrawers)
             Destroy(drawer.gameObject);
         mAssemblyDrawers.Clear();
 
-        mAssembliesIterator.Calculate();
+        mLiquidIterator.UseAllTechnologies = mLiquidSolidIterator.UseAllTechnologies = mAllTechs.isOn;
+        mLiquidIterator.Payload = mLiquidSolidIterator.Payload = float.Parse(mPayload.text);
+        mLiquidIterator.UseOneStage = mSingleStage.isOn;
 
-        foreach (var assembly in mAssembliesIterator.Assemblies)
+        mLiquidIterator.Calculate();
+        mLiquidSolidIterator.Calculate();
+
+        foreach (var assembly in mLiquidIterator.Assemblies)
         {
-            var row = Instantiate(mAssemblyDrawerPrefab, mTableRoot);
+            var row = Instantiate(mAssemblyDrawerPrefab, mLiquidRoot);
             row.Init(assembly);
+            row.ShowFuelMass(mShowFuelMass);
+            mAssemblyDrawers.Add(row);
+        }
+
+        foreach (var assembly in mLiquidSolidIterator.Assemblies)
+        {
+            var row = Instantiate(mAssemblyDrawerPrefab, mSolidRoot);
+            row.Init(assembly);
+            row.ShowFuelMass(mShowFuelMass);
             mAssemblyDrawers.Add(row);
         }
     }
