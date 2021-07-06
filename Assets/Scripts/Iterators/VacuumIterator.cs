@@ -4,20 +4,9 @@ using UnityEngine;
 
 public class VacuumIterator
 {
-    public struct Assembly
-    {
-        public Engine Engine;
-        public int EnginesCount;
-        public int StagesCount;
-        public float[] FuelTanks;
-
-        public float Mass;
-        public float Cost;
-        public float Time;
-    }
-
-    private const int mMaximumEnginesCount = 9;
-    private const int mMaximumStagesCount = 9;
+    //TODO Medium Возможно стоит вывести эти параметры на UI
+    private const int mMaximumEnginesCount = 2;
+    private const int mMaximumStagesCount = 1;
     private const int mMaximumAssembliesOnScreen = 30;
     private const int mGoodTime = 60;
 
@@ -28,7 +17,7 @@ public class VacuumIterator
     public List<Technology> Technologies { get; set; } = new List<Technology>();
     public bool UseAllTechnologies { get; set; } = true;
 
-    public List<Assembly> Assemblies { get; private set; } = new List<Assembly>();
+    public List<VacuumAssembly> Assemblies { get; private set; } = new List<VacuumAssembly>();
 
     public void Calculate()
     {
@@ -41,12 +30,12 @@ public class VacuumIterator
 
         FillAssembliesList();
 
-        Debug.Log($"VacuumIterator  {Assemblies.Count}");
         Assemblies = Assemblies.OrderBy(set => set.Time).Take(mMaximumAssembliesOnScreen).ToList();
     }
 
     private void FillAssembliesList()
     {
+        //TODO Medium Придумать как отсечь ненужные варианты
         var engines = Technologies.SelectMany(tech => tech.Parts.OfType<Engine>()).Where(engine => !(engine is SolidFuelEngine));
         foreach (var engine in engines)
         {
@@ -58,15 +47,14 @@ public class VacuumIterator
                 var minimumStagesCount = Mathf.CeilToInt(DeltaV / criticalDeltaV);
                 for (var stagesCount = minimumStagesCount; stagesCount <= mMaximumStagesCount; stagesCount++)
                 {
-                    //TODO ??? Нужны отсечения
-                    var assembly = new Assembly()
+                    var assembly = new VacuumAssembly()
                     {
                         Engine = engine,
                         EnginesCount = enginesCount,
                         StagesCount = stagesCount,
                         Mass = Payload + enginesCount * engine.Mass,
                         Cost = enginesCount * engine.Cost,
-                        FuelTanks = new float[stagesCount]
+                        Stages = new (float FuelMass, float tankMass, float DeltaV)[stagesCount]
                     };
 
                     var stageDeltaV = DeltaV / stagesCount;
@@ -77,22 +65,19 @@ public class VacuumIterator
 
                     for (var stage = 0; stage < stagesCount; stage++)
                     {
-                        var (_, fuelTankMass, fuelCost) = Constants.SplitFuel(assembly.Mass * multiplier, engine.Fuel);
+                        var (fuelMass, fuelTankMass, fuelCost) = Constants.SplitFuel(assembly.Mass * multiplier, engine.Fuel);
+                        var deltaV = engine.Impulse * Constants.g * Mathf.Log((assembly.Mass + fuelTankMass) / (assembly.Mass + fuelTankMass - fuelMass)); 
                         assembly.Mass += fuelTankMass + mStraightDecoupler.Mass;
                         assembly.Cost += fuelCost + mStraightDecoupler.Cost;
-                        assembly.Time += fuelTankMass / (enginesCount * engine.FuelConsumption);
-                        assembly.FuelTanks[stage] = fuelTankMass;
+                        assembly.Time += fuelMass / (enginesCount * engine.FuelConsumption);
+                        assembly.Stages[stage] = (fuelMass, fuelTankMass, deltaV);
                     }
 
-                    //TODO Проверить, что считается корректно
-                    foreach (var good in Assemblies)
-                    {
-                        if (assembly.Mass > good.Mass &&
-                            assembly.Cost > good.Cost &&
-                            (assembly.Time > good.Time || assembly.Time < mGoodTime && good.Time < mGoodTime))
-                            return;
-                    }
-                    Assemblies.Add(assembly);
+                    if (!Assemblies.Any(good =>
+                        assembly.Mass > good.Mass &&
+                        assembly.Cost > good.Cost &&
+                        (assembly.Time > good.Time || assembly.Time < mGoodTime && good.Time < mGoodTime)))
+                        Assemblies.Add(assembly);
                 }
             }
         }

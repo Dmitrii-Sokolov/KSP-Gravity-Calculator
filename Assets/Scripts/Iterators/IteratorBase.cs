@@ -22,7 +22,7 @@ public abstract class IteratorBase
 
     public void Calculate()
     {
-        //TODO Фильтр по технологиям + сохранение в реестр
+        //TODO Medium Фильтр по технологиям + сохранение в реестр
 
         Assemblies.Clear();
         BestCost = float.PositiveInfinity;

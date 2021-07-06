@@ -5,9 +5,13 @@ using UnityEngine.UI;
 public class MainUI : MonoBehaviour
 {
     private bool mShowFuelMass = false;
+
     private LiquidIterator mLiquidIterator = new LiquidIterator();
     private LiquidSolidIterator mLiquidSolidIterator = new LiquidSolidIterator();
+    private VacuumIterator mVacuumIterator = new VacuumIterator();
+
     private List<AssemblyDrawer> mAssemblyDrawers = new List<AssemblyDrawer>();
+    private List<VacuumAssemblyDrawer> mVacuumAssemblyDrawers = new List<VacuumAssemblyDrawer>();
 
     [SerializeField] private Toggle mAllTechs;
     [SerializeField] private Toggle mSingleStage;
@@ -21,20 +25,27 @@ public class MainUI : MonoBehaviour
     [SerializeField] private AssemblyDrawer mAssemblyDrawerPrefab;
 
     [Space]
+    [SerializeField] private InputField mPayloadVacuum;
+    [SerializeField] private InputField mDeltaV;
+    [SerializeField] private Transform mVacuumRoot;
+    [SerializeField] private VacuumAssemblyDrawer mVacuumAssemblyDrawer;
+
+    [Space]
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
-    //TODO UI для рассчётов в вакууме
-    //TODO UI для суммирования
-    //TODO UI для таблицы с двигателями + фильтр + сортировка
-    //TODO UI для таблицы с топливными баками
+    //TODO Medium UI для суммирования DeltaV в вакууме
+
+    //TODO Minor UI для таблицы с двигателями + фильтр + сортировка
+    //TODO Minor UI для таблицы с топливными баками
 
     void Start()
     {
-        var test = new VacuumIterator();
-        test.Calculate();
-
         mPayload.onEndEdit.AddListener(_ => Calculate());
         mSingleStage.onValueChanged.AddListener(_ => Calculate());
+
+        mPayloadVacuum.onEndEdit.AddListener(_ => CalculateVacuum());
+        mDeltaV.onEndEdit.AddListener(_ => CalculateVacuum());
+
         mSwitchFuel.onClick.AddListener(SwitchFuel);
         SwitchFuel();
     }
@@ -44,6 +55,8 @@ public class MainUI : MonoBehaviour
         mShowFuelMass = !mShowFuelMass;
         mSwitchFuelText.text = mShowFuelMass ? "Fuel Mass" : "Fuel Tank Mass";
         foreach (var drawer in mAssemblyDrawers)
+            drawer.ShowFuelMass(mShowFuelMass);
+        foreach (var drawer in mVacuumAssemblyDrawers)
             drawer.ShowFuelMass(mShowFuelMass);
     }
     
@@ -74,6 +87,26 @@ public class MainUI : MonoBehaviour
             row.Init(assembly);
             row.ShowFuelMass(mShowFuelMass);
             mAssemblyDrawers.Add(row);
+        }
+    }
+
+    private void CalculateVacuum()
+    {
+        foreach (var drawer in mVacuumAssemblyDrawers)
+            Destroy(drawer.gameObject);
+        mVacuumAssemblyDrawers.Clear();
+
+        mVacuumIterator.UseAllTechnologies = mAllTechs.isOn;
+        mVacuumIterator.Payload = float.Parse(mPayloadVacuum.text);
+        mVacuumIterator.DeltaV = float.Parse(mDeltaV.text);
+        mVacuumIterator.Calculate();
+
+        foreach (var assembly in mVacuumIterator.Assemblies)
+        {
+            var row = Instantiate(mVacuumAssemblyDrawer, mVacuumRoot);
+            row.Init(assembly);
+            row.ShowFuelMass(mShowFuelMass);
+            mVacuumAssemblyDrawers.Add(row);
         }
     }
 }

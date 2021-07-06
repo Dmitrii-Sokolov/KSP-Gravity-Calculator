@@ -49,7 +49,7 @@ public class LiquidSolidIterator : IteratorBase
                 -(Constants.MinAcceleration * mass1Start - count1 * engine1.ThrustAtOneAtmosphere) /
                 (Constants.MinAcceleration * (engine0.Mass + engine0.FuelMass) - engine0.ThrustAtOneAtmosphere));
 
-            //TODO Объединить со вторым итератором
+            //TODO Minor Объединить со вторым итератором
 
             for (var count0 = count0Min; count0 <= mMaximumEnginesPerStage; count0++)
             {

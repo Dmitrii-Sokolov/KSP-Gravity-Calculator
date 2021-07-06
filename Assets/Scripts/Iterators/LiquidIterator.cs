@@ -33,8 +33,8 @@ public class LiquidIterator : IteratorBase
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
-        //TODO Расчёт цены неверен, выяснить насколько и почему
-        //TODO Попробовать добавлять пару разных двигателей
+        //TODO Critical Расчёт цены неверен, выяснить насколько и почему
+        //TODO Minor Попробовать добавлять пару разных двигателей
 
         var averageAtmosphere = isAtmosphereExists ? (assembly.Stages.Count == 0 ? 0.5f : 1f) : 0f;
         var startAtmosphere = isAtmosphereExists ? 1f : 0f;
