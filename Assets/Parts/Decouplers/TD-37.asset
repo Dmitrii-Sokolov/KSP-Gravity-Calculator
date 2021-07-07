@@ -15,5 +15,5 @@ MonoBehaviour:
   Sprite: {fileID: 21300000, guid: d1f071bdad216bc48ae279e6e6ac77f1, type: 3}
   Alias: TD-37
   Name: TD-37 Decoupler
-  Cost: 600
+  Cost: 375
   Mass: 360

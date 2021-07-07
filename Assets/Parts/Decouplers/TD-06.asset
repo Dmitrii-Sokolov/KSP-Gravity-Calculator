@@ -15,5 +15,5 @@ MonoBehaviour:
   Sprite: {fileID: 21300000, guid: 155d636904a95314b977c5159c80686f, type: 3}
   Alias: TD-06
   Name: TD-06 Decoupler
-  Cost: 300
+  Cost: 150
   Mass: 10

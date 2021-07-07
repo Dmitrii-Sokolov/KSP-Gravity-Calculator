@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class VacuumIterator
 {
-    //TODO Medium Возможно стоит вывести эти параметры на UI
-    private const int mMaximumEnginesCount = 2;
+    //TODO Medium Сделать динамическую сортировку/подсветку
+    //TODO Medium Сделать эти параметры изменяемыми на лету
+    //TODO Medium Вывести импульс, тягу и тягу связки и массу в таблицу, а также обе массы топлива + критический dv, импульс в атмосфере, 
+    private const int mMaximumEnginesCount = 1;
     private const int mMaximumStagesCount = 1;
-    private const int mMaximumAssembliesOnScreen = 30;
-    private const int mGoodTime = 60;
+    private const int mMaximumAssembliesOnScreen = 60;
 
     private Decoupler mStraightDecoupler;
 
@@ -30,7 +31,7 @@ public class VacuumIterator
 
         FillAssembliesList();
 
-        Assemblies = Assemblies.OrderBy(set => set.Time).Take(mMaximumAssembliesOnScreen).ToList();
+        Assemblies = Assemblies.OrderBy(set => -set.Engine.Impulse).Take(mMaximumAssembliesOnScreen).ToList();
     }
 
     private void FillAssembliesList()
@@ -41,11 +42,16 @@ public class VacuumIterator
         {
             var tank = Constants.FuelMassToTankMass(engine.Fuel);
             var criticalDeltaV = engine.Impulse * Constants.g * Mathf.Log(tank / (tank - 1));
-            var minimumEnginesCount = engine.RadialMountedOnly ? 2 : 1;
-            for (var enginesCount = minimumEnginesCount; enginesCount <= mMaximumEnginesCount; enginesCount++)
+            var enginesCountMin = engine.RadialMountedOnly ? 2 : 1;
+            var enginesCountMax = Mathf.Max(mMaximumEnginesCount, enginesCountMin);
+            for (var enginesCount = enginesCountMin; enginesCount <= enginesCountMax; enginesCount++)
             {
-                var minimumStagesCount = Mathf.CeilToInt(DeltaV / criticalDeltaV);
-                for (var stagesCount = minimumStagesCount; stagesCount <= mMaximumStagesCount; stagesCount++)
+                //Считаем, что на одну ступень не стоит нагружать более половины критической DeltaV
+                //Разница между ступенью DeltaV / 2 и двумя ступенями по DeltaV / 4 составит 13% по массе топлива
+                //На практике, число ступеней стоит увеличивать до предела опираясь на максимально доступную сложность сборки и желаемую комфортностью управления
+                var stagesCountMin = Mathf.CeilToInt(2f * DeltaV / criticalDeltaV);
+                var stagesCountMax = Mathf.Max(stagesCountMin, mMaximumStagesCount);
+                for (var stagesCount = stagesCountMin; stagesCount <= stagesCountMax; stagesCount++)
                 {
                     var assembly = new VacuumAssembly()
                     {
@@ -73,11 +79,11 @@ public class VacuumIterator
                         assembly.Stages[stage] = (fuelMass, fuelTankMass, deltaV);
                     }
 
-                    if (!Assemblies.Any(good =>
-                        assembly.Mass > good.Mass &&
-                        assembly.Cost > good.Cost &&
-                        (assembly.Time > good.Time || assembly.Time < mGoodTime && good.Time < mGoodTime)))
-                        Assemblies.Add(assembly);
+                    //if (!Assemblies.Any(good =>
+                    //    assembly.Mass > good.Mass &&
+                    //    assembly.Cost > good.Cost &&
+                    //    (assembly.Time > good.Time || assembly.Time < mGoodTime && good.Time < mGoodTime)))
+                    Assemblies.Add(assembly);
                 }
             }
         }

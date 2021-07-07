@@ -15,5 +15,5 @@ MonoBehaviour:
   Sprite: {fileID: 21300000, guid: 6cafd1deddf6fe54196b6f6352a4e2c0, type: 3}
   Alias: TD-12
   Name: TD-12 Decoupler
-  Cost: 400
+  Cost: 200
   Mass: 40

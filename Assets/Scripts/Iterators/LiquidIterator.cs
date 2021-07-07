@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LiquidIterator : IteratorBase
 {
+    //TODO Medium Ќе скрывать плохие варианты, а засер€ть их; сделать небольшой допуск по DeltaV
     private IEnumerable<Engine> mEngines;
     private IEnumerable<Engine> mTopEngines;
 
@@ -33,8 +34,11 @@ public class LiquidIterator : IteratorBase
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
-        //TODO Critical –асчЄт цены неверен, вы€снить насколько и почему
+        //TODO Medium ѕочему в подборку не попадают классные мощные двигатели типа мамонта и вектора
         //TODO Minor ѕопробовать добавл€ть пару разных двигателей
+
+        //TODO Medium Ќе скрывать плохие варианты, а засер€ть их; сделать небольшой допуск по DeltaV
+        //TODO Medium ѕочему так мало вариантов в некоторых случа€х?
 
         var averageAtmosphere = isAtmosphereExists ? (assembly.Stages.Count == 0 ? 0.5f : 1f) : 0f;
         var startAtmosphere = isAtmosphereExists ? 1f : 0f;
@@ -46,9 +50,13 @@ public class LiquidIterator : IteratorBase
             var decouplerCount = 2;
             var decoupler = mRadialDecoupler;
 
-            if (count == 5 || count == 7)
+            if (assembly.Stages.Count == 0)
             {
-                continue;
+                decouplerCount = 0;
+            }
+            else if (count == 5 || count == 7)
+            {
+                decouplerCount = count;
             }
             else if (count == 1)
             {
