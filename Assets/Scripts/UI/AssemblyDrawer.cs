@@ -59,12 +59,6 @@ public class AssemblyDrawer : MonoBehaviour
         }
     }
 
-    public void ShowFuelMass(bool mShowFuelMass)
-    {
-        foreach (var drawer in mFuelDrawers)
-            drawer.ShowFuelMass(mShowFuelMass);
-    }
-
     private void SwitchState()
     {
         mIsSelected = !mIsSelected;

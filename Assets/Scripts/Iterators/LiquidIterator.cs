@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class LiquidIterator : IteratorBase
 {
-    //TODO Medium Не скрывать плохие варианты, а засерять их; сделать небольшой допуск по DeltaV
     private IEnumerable<Engine> mEngines;
     private IEnumerable<Engine> mTopEngines;
 

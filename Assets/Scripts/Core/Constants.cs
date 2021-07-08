@@ -84,7 +84,11 @@ public static class Constants
         {
             case FuelType.RocketPropellant:
                 //Просто разливаем по минимальным бакам, без перебора вариантов
-                var massR = value < 500f ? Mathf.Ceil(value / 200f) * 200f : Mathf.Ceil(value / 500f) * 500f;
+                var massR = value < 500f
+                    ? Mathf.Ceil(value / 200f) * 200f
+                    : value < 10000f
+                        ? Mathf.Ceil(value / 500f) * 500f
+                        : Mathf.Ceil(value / 1000f) * 1000f;
                 return (massR, massR * 1.125f, massR * 0.2f);
 
             case FuelType.Monopropellant:

@@ -45,6 +45,11 @@ public class Engine : Part
     public float FuelConsumption => ThrustVacuum / (Constants.g * Impulse);
 
     /// <summary>
+    /// Max delta V, m/s
+    /// </summary>
+    public float MaxDeltaV => Impulse * Constants.g * Mathf.Log(Constants.FuelMassToTankMass(Fuel) / (Constants.FuelMassToTankMass(Fuel) - 1));
+
+    /// <summary>
     /// Very approximate calculation
     /// </summary>
     public float GetImpulse(float atmosphere)

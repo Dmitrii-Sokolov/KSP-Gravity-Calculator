@@ -13,10 +13,4 @@ public class FuelDrawer : MonoBehaviour
         mLiquidFuelTankMass.text = fuelTankMass.ToString("N", Locale.Format) + "kg";
         mDeltaV.text = deltaV.ToString("N", Locale.Format) + "m/s";
     }
-
-    public void ShowFuelMass(bool mShowFuelMass)
-    {
-        mLiquidFuelMass.gameObject.SetActive(mShowFuelMass);
-        mLiquidFuelTankMass.gameObject.SetActive(!mShowFuelMass);
-    }
 }
