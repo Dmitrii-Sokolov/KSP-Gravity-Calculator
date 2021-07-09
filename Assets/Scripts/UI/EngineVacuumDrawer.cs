@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -39,6 +40,9 @@ public class EngineVacuumDrawer : MonoBehaviour
     [SerializeField] private Button mStagesCountPlus;
 
     [SerializeField] private Text mThrustText;
+
+    [SerializeField] private Graphic mCostRating;
+    [SerializeField] private Graphic mMassRating;
 
     [SerializeField] private Text mCostText;
     [SerializeField] private Text mMassText;
@@ -122,7 +126,27 @@ public class EngineVacuumDrawer : MonoBehaviour
         }
     }
 
-    public void Init(Engine engine)
+    public float BestCost
+    {
+        set
+        {
+            var color = mCostRating.color;
+            color.a = GetRatingAlpha(value / Cost);
+            mCostRating.color = color;
+        }
+    }
+
+    public float BestMass
+    {
+        set
+        {
+            var color = mMassRating.color;
+            color.a = GetRatingAlpha(value / Mass);
+            mMassRating.color = color;
+        }
+    }
+
+    public void Init(Engine engine, Action onValuesChanged)
     {
         mDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TD-12");
         mEngine = engine;
@@ -139,10 +163,10 @@ public class EngineVacuumDrawer : MonoBehaviour
         mEnginesCountMin = mEngine.RadialMountedOnly ? 2 : 1;
         EnginesCount = mEnginesCountMin;
 
-        mStagesCountMinus.onClick.AddListener(() => { StagesCount--; Calculate(); });
-        mStagesCountPlus.onClick.AddListener(() => { StagesCount++; Calculate(); });
-        mEnginesCountMinus.onClick.AddListener(() => { EnginesCount--; Calculate(); });
-        mEnginesCountPlus.onClick.AddListener(() => { EnginesCount++; Calculate(); });
+        mStagesCountMinus.onClick.AddListener(() => { StagesCount--; Calculate(); onValuesChanged?.Invoke(); });
+        mStagesCountPlus.onClick.AddListener(() => { StagesCount++; Calculate(); onValuesChanged?.Invoke(); });
+        mEnginesCountMinus.onClick.AddListener(() => { EnginesCount--; Calculate(); onValuesChanged?.Invoke(); });
+        mEnginesCountPlus.onClick.AddListener(() => { EnginesCount++; Calculate(); onValuesChanged?.Invoke(); });
         mButton.onClick.AddListener(SwitchState);
     }
 
@@ -198,5 +222,10 @@ public class EngineVacuumDrawer : MonoBehaviour
         colors.normalColor = mIsSelected ? mActive : mNormal;
         mButton.colors = colors;
         mFuelDrawers[0].transform.parent.gameObject.SetActive(mIsSelected);
+    }
+
+    private float GetRatingAlpha(float value)
+    {
+        return Mathf.Clamp01(value);
     }
 }
