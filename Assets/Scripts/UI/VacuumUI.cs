@@ -8,9 +8,8 @@ public class VacuumUI : MonoBehaviour
 {
     private SortButton mCurrentSort;
 
-    private List<EngineVacuumDrawer> mEngineVacuumDrawers = new List<EngineVacuumDrawer>();
+    private readonly List<EngineVacuumDrawer> mEngineVacuumDrawers = new List<EngineVacuumDrawer>();
 
-    [SerializeField] private Toggle mAllTechs;
     [SerializeField] private InputField mPayload;
 
     [SerializeField] private InputField mDeltaV;
@@ -30,8 +29,6 @@ public class VacuumUI : MonoBehaviour
     [SerializeField] private SortButton mTime;
     [SerializeField] private SortButton mFuelMass;
     [SerializeField] private SortButton mFuelTankMass;
-
-    public List<Technology> Technologies { get; set; } = new List<Technology>();
 
     //TODO Major Суммирование нескольких DeltaV + домножение + загрузка в PlayerPrefs
 
@@ -56,18 +53,13 @@ public class VacuumUI : MonoBehaviour
         mPayload.onEndEdit.AddListener(_ => Calculate());
         mDeltaV.onEndEdit.AddListener(_ => Calculate());
 
-        if (mAllTechs.isOn)
-            Technologies = Technology.GetAll().ToList();
+        TechUI.Instance.OnTechnologiesChanged += Recreate;
+        Recreate();
+    }
 
-        var engines = Technologies.SelectMany(tech => tech.Parts.OfType<Engine>()).Where(engine => !(engine is SolidFuelEngine));
-        foreach (var engine in engines)
-        {
-            var row = Instantiate(mEngineVacuumDrawer, mRoot);
-            row.Init(engine, OnTableChanged);
-            mEngineVacuumDrawers.Add(row);
-        }
-
-        Calculate();
+    private void OnDestroy()
+    {
+        TechUI.Instance.OnTechnologiesChanged -= Recreate;
     }
 
     public void OnTableChanged()
@@ -98,8 +90,27 @@ public class VacuumUI : MonoBehaviour
         Resort();
     }
 
+    private void Recreate()
+    {
+        foreach (var drawer in mEngineVacuumDrawers)
+            Destroy(drawer.gameObject);
+        mEngineVacuumDrawers.Clear();
+
+        var engines = TechUI.Instance.Technologies.SelectMany(tech => tech.Parts.OfType<Engine>()).Where(engine => !(engine is SolidFuelEngine));
+        foreach (var engine in engines)
+        {
+            var row = Instantiate(mEngineVacuumDrawer, mRoot);
+            row.Init(engine, OnTableChanged);
+            mEngineVacuumDrawers.Add(row);
+        }
+        Calculate();
+    }
+
     private void Resort()
     {
+        if (mEngineVacuumDrawers.Count == 0)
+            return;
+
         var order = 0;
         var list = mCurrentSort.SortAction(mEngineVacuumDrawers);
         if (!mCurrentSort.Ascending)
@@ -110,6 +121,9 @@ public class VacuumUI : MonoBehaviour
 
     private void Calculate()
     {
+        if (mEngineVacuumDrawers.Count == 0)
+            return;
+
         var payload = float.Parse(mPayload.text);
         var deltaV = float.Parse(mDeltaV.text);
 

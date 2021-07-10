@@ -15,7 +15,6 @@ public abstract class IteratorBase
 
     public float Payload { get; set; } = 1000f;
     public List<Technology> Technologies { get; set; } = new List<Technology>();
-    public bool UseAllTechnologies { get; set; } = true;
 
     public List<IEngineAssembly> Assemblies { get; private set; } = new List<IEngineAssembly>();
     public float BestCost { get; set; }
@@ -24,9 +23,6 @@ public abstract class IteratorBase
     {
         Assemblies.Clear();
         BestCost = float.PositiveInfinity;
-
-        if (UseAllTechnologies)
-            Technologies = Technology.GetAll().ToList();
 
         mRadialDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TT-70");
         mStraightDecoupler = Part.GetAll<Decoupler>().FirstOrDefault(p => p.Alias == "TD-12");

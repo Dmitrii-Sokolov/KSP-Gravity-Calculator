@@ -9,7 +9,6 @@ public class GravityUI : MonoBehaviour
 
     private List<AssemblyDrawer> mAssemblyDrawers = new List<AssemblyDrawer>();
 
-    [SerializeField] private Toggle mAllTechs;
     [SerializeField] private Toggle mSingleStage;
     [SerializeField] private InputField mPayload;
     [SerializeField] private Transform mLiquidRoot;
@@ -20,6 +19,12 @@ public class GravityUI : MonoBehaviour
     {
         mPayload.onEndEdit.AddListener(_ => Calculate());
         mSingleStage.onValueChanged.AddListener(_ => Calculate());
+        TechUI.Instance.OnTechnologiesChanged += Calculate;
+    }
+
+    private void OnDestroy()
+    {
+        TechUI.Instance.OnTechnologiesChanged -= Calculate;
     }
 
     private void Calculate()
@@ -28,7 +33,7 @@ public class GravityUI : MonoBehaviour
             Destroy(drawer.gameObject);
         mAssemblyDrawers.Clear();
 
-        mLiquidIterator.UseAllTechnologies = mLiquidSolidIterator.UseAllTechnologies = mAllTechs.isOn;
+        mLiquidIterator.Technologies = mLiquidSolidIterator.Technologies = TechUI.Instance.Technologies;
         mLiquidIterator.Payload = mLiquidSolidIterator.Payload = float.Parse(mPayload.text);
         mLiquidIterator.UseOneStage = mSingleStage.isOn;
 

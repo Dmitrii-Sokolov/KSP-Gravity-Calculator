@@ -9,14 +9,13 @@ public class MainUI : MonoBehaviour
     [Serializable]
     private class CanvasButtonPair
     {
-        public Canvas Canvas;
+        public GameObject Canvas;
         public Button Button;
     }
 
     [SerializeField] private List<CanvasButtonPair> mCanvasButtonPairs;
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
-    //TODO Medium Фильтр по технологиям + сохранение в реестр
     //TODO Minor Сделать таблицу баков с топливом, проверить актуальность
     //TODO Minor Попробовать перевести мод с порядком на русский
 
@@ -32,7 +31,7 @@ public class MainUI : MonoBehaviour
         foreach (var item in mCanvasButtonPairs)
         {
             item.Button.interactable = pair.Canvas != item.Canvas;
-            item.Canvas.enabled = pair.Canvas == item.Canvas;
+            item.Canvas.SetActive(pair.Canvas == item.Canvas);
         }
     }
 }
