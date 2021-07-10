@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +12,9 @@ public class VacuumUI : MonoBehaviour
 
     [SerializeField] private InputField mPayload;
 
-    [SerializeField] private InputField mDeltaV;
+    [SerializeField] private InputField mDeltaVTerms;
+    [SerializeField] private InputField mDeltaVMultiplier;
+    [SerializeField] private InputField mTargetDeltaV;
     [SerializeField] private Transform mRoot;
     [SerializeField] private EngineVacuumDrawer mEngineVacuumDrawer;
 
@@ -30,7 +32,10 @@ public class VacuumUI : MonoBehaviour
     [SerializeField] private SortButton mFuelMass;
     [SerializeField] private SortButton mFuelTankMass;
 
-    //TODO Major Суммирование нескольких DeltaV + домножение + загрузка в PlayerPrefs
+    private float RawDeltaV { get; set; }
+    private float DeltaVMultiplier { get; set; }
+    private float TargetDeltaV { get; set; }
+    private float Payload { get; set; }
 
     void Start()
     {
@@ -50,11 +55,23 @@ public class VacuumUI : MonoBehaviour
         mCurrentSort = mImpulse;
         mCurrentSort.IsSelected = true;
 
-        mPayload.onEndEdit.AddListener(_ => Calculate());
-        mDeltaV.onEndEdit.AddListener(_ => Calculate());
+        mDeltaVTerms.onEndEdit.AddListener(OnDeltaVTermsEndEdit);
+        mDeltaVMultiplier.onEndEdit.AddListener(OnDeltaVMultiplayerEndEdit);
+        mTargetDeltaV.onEndEdit.AddListener(OnDeltaVEndEdit);
+        mPayload.onEndEdit.AddListener(OnPayloadEndEdit);
 
         TechUI.Instance.OnTechnologiesChanged += Recreate;
-        Recreate();
+        Create();
+
+        Payload = PlayerPrefs.GetInt("Payload", 1000);
+        mPayload.text = Payload.ToString("G", Locale.Format);
+
+        DeltaVMultiplier = PlayerPrefs.GetFloat("DeltaVMultiplier", 1.2f);
+        mDeltaVMultiplier.text = DeltaVMultiplier.ToString("G", Locale.Format);
+
+        var terms = PlayerPrefs.GetString("DeltaVTerms");
+        OnDeltaVTermsEndEdit(terms);
+        ShowRawDeltaV();
     }
 
     private void OnDestroy()
@@ -90,7 +107,53 @@ public class VacuumUI : MonoBehaviour
         Resort();
     }
 
+    private void OnDeltaVTermsEndEdit(string input)
+    {
+        RawDeltaV = 0f;
+        var terms = Regex.Matches(input, "\\d+");
+        foreach (Match term in terms)
+            RawDeltaV += int.Parse(term.Value, Locale.Format);
+
+        TargetDeltaV = RawDeltaV * DeltaVMultiplier;
+        mTargetDeltaV.text = TargetDeltaV.ToString("N", Locale.Format);
+        ShowRawDeltaV();
+        PlayerPrefs.SetString("DeltaVTerms", input);
+        Calculate();
+    }
+
+    private void OnDeltaVMultiplayerEndEdit(string input)
+    {
+        DeltaVMultiplier = float.Parse(input, Locale.Format);
+        TargetDeltaV = RawDeltaV * DeltaVMultiplier;
+        mTargetDeltaV.text = TargetDeltaV.ToString("N", Locale.Format);
+        ShowRawDeltaV();
+        PlayerPrefs.SetFloat("DeltaVMultiplier", DeltaVMultiplier);
+        Calculate();
+    }
+
+    private void OnDeltaVEndEdit(string input)
+    {
+        TargetDeltaV = int.Parse(input, Locale.Format);
+        RawDeltaV = TargetDeltaV / DeltaVMultiplier;
+        HideRawDeltaV();
+        Calculate();
+    }
+
+    private void OnPayloadEndEdit(string input)
+    {
+        var payload = int.Parse(input, Locale.Format);
+        Payload = payload;
+        PlayerPrefs.SetInt("Payload", payload);
+        Calculate();
+    }
+
     private void Recreate()
+    {
+        Create();
+        Calculate();
+    }
+
+    private void Create()
     {
         foreach (var drawer in mEngineVacuumDrawers)
             Destroy(drawer.gameObject);
@@ -103,7 +166,6 @@ public class VacuumUI : MonoBehaviour
             row.Init(engine, OnTableChanged);
             mEngineVacuumDrawers.Add(row);
         }
-        Calculate();
     }
 
     private void Resort()
@@ -124,17 +186,26 @@ public class VacuumUI : MonoBehaviour
         if (mEngineVacuumDrawers.Count == 0)
             return;
 
-        var payload = float.Parse(mPayload.text);
-        var deltaV = float.Parse(mDeltaV.text);
-
         foreach (var drawer in mEngineVacuumDrawers)
         {
-            drawer.Payload = payload;
-            drawer.DeltaV = deltaV;
+            drawer.DeltaV = TargetDeltaV;
+            drawer.Payload = Payload;
             drawer.Calculate();
         }
 
         Resort();
         OnTableChanged();
+    }
+
+    private void ShowRawDeltaV()
+    {
+        mDeltaVTerms.targetGraphic.color = Color.white;
+        mDeltaVMultiplier.targetGraphic.color = Color.white;
+    }
+
+    private void HideRawDeltaV()
+    {
+        mDeltaVTerms.targetGraphic.color = Color.gray;
+        mDeltaVMultiplier.targetGraphic.color = Color.gray;
     }
 }

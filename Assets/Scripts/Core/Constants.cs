@@ -83,7 +83,7 @@ public static class Constants
         switch (type)
         {
             case FuelType.RocketPropellant:
-                //Просто разливаем по минимальным бакам, без перебора вариантов
+                //We just fill the minimum tanks, without going through the options
                 var massR = value < 500f
                     ? Mathf.Ceil(value / 200f) * 200f
                     : value < 10000f
@@ -92,16 +92,17 @@ public static class Constants
                 return (massR, massR * 1.125f, massR * 0.2f);
 
             case FuelType.Monopropellant:
-                //Просто разливаем по самому ходовому баку, без перебора вариантов
+                //We just fill the minimum tanks, without going through the options
                 var countM = Mathf.Ceil(value / 480f);
                 return (countM * 480f, countM * 560f, countM * 330f);
 
             case FuelType.LiquidFuel:
-                //Просто разливаем по самому ходовому баку, без перебора вариантов
+                //We just fill the minimum tanks, without going through the options
                 var countL = Mathf.Ceil(value / 2000f);
                 return (countL * 2000f, countL * 2250, countL * 550f);
 
             case FuelType.Xenon:
+                //In some cases, this algorithm will produce an excessive amount of fuel
                 var (xenonMass, xenonTankMass, xenonCost) = (0f, 0f, 0f);
                 for (var xTank = 0; xTank < XenonCapacities.Length; xTank++)
                 {

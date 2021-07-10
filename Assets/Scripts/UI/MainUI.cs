@@ -16,8 +16,7 @@ public class MainUI : MonoBehaviour
     [SerializeField] private List<CanvasButtonPair> mCanvasButtonPairs;
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
-    //TODO Minor —делать таблицу баков с топливом, проверить актуальность
-    //TODO Minor ѕопробовать перевести мод с пор€дком на русский
+    //TODO Minor Make Fuel Tanks Table
 
     void Start()
     {

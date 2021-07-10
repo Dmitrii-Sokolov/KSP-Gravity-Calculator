@@ -38,14 +38,19 @@ public class TechUI : MonoBehaviour
         }
     }
 
+    //TODO Minor Filtering by engine
+
     public event Action OnTechnologiesChanged;
 
     public static TechUI Instance { get; private set; }
 
-    void Start()
+    private void Awake()
     {
         Instance = Instance == null ? this : throw new Exception("TechUI");
+    }
 
+    void Start()
+    {
         foreach (var tech in Technology.GetAll().OrderBy(t => t.Level).ThenBy(t => t.Name))
         {
             var row = Instantiate(mTechDrawer, mRoot);

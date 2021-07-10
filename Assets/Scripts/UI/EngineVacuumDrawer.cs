@@ -89,9 +89,9 @@ public class EngineVacuumDrawer : MonoBehaviour
         set
         {
             mDeltaV = value;
-            //Считаем, что на одну ступень не стоит нагружать более половины критической DeltaV
-            //Разница между ступенью DeltaV / 2 и двумя ступенями по DeltaV / 4 составит 13% по массе топлива
-            //На практике, число ступеней стоит увеличивать до предела опираясь на максимально доступную сложность сборки и желаемую комфортностью управления
+            //One stage should not load more than half of the critical DeltaV
+            //The difference between a DeltaV / 2 stage and two DeltaV / 4 stages is 13% by mass of fuel
+            //In practice, the number of steps should be increased to the limit based on the maximum available assembly complexity and the desired control comfort.
             mStagesCountMin = Mathf.CeilToInt(2f * DeltaV / mMaxDeltaV);
             StagesCount = Mathf.Max(StagesCount, mStagesCountMin);
         }

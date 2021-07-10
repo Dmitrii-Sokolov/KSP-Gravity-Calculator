@@ -22,10 +22,10 @@ public class LiquidIterator : IteratorBase
     {
         foreach (var engine in assembly.Stages.Count == 0 ? mTopEngines : mEngines)
         {
-            //Считаем, что добрались до дна отмосферы
+            //We believe that we have reached the bottom of the atmosphere
             TryAddStage(ref assembly, engine, true);
 
-            //Считаем, что мы ещё в вакууме
+            //We believe that we are still in a vacuum
             if (!UseOneStage)
                 TryAddStage(ref assembly, engine, false);
         }
@@ -33,11 +33,8 @@ public class LiquidIterator : IteratorBase
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
-        //TODO Medium Почему в подборку не попадают классные мощные двигатели типа мамонта и вектора
-        //TODO Minor Попробовать добавлять пару разных двигателей
-
-        //TODO Medium Не скрывать плохие варианты, а засерять их; сделать небольшой допуск по DeltaV
-        //TODO Medium Почему так мало вариантов в некоторых случаях?
+        //TODO Medium Why cool powerful motors like mammoth and vector are not included in the selection?
+        //TODO Minor Try adding a different engines
 
         var averageAtmosphere = isAtmosphereExists ? (assembly.Stages.Count == 0 ? 0.5f : 1f) : 0f;
         var startAtmosphere = isAtmosphereExists ? 1f : 0f;
@@ -78,7 +75,7 @@ public class LiquidIterator : IteratorBase
             for (var i = newAssembly.Stages.Count - 1; i >= 0; i--)
             {
                 var stage = newAssembly.Stages[i];
-                //Если более чем на одной ступени ровно один двигатель, то работает только самая нижняя из таких
+                //If there is exactly one engine in more than one stage, then only the lowest of such engines operates.
                 if (stage.EngineCount == 1)
                 {
                     if (oneEnginePerStage)
