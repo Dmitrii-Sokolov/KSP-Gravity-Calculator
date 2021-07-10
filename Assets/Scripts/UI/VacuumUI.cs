@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,15 +7,28 @@ using UnityEngine.UI;
 
 public class VacuumUI : MonoBehaviour
 {
+    [Serializable]
+    private class DeltaVPreset
+    {
+        public string Caption;
+        public string DeltaV;
+    }
     private SortButton mCurrentSort;
 
     private readonly List<EngineVacuumDrawer> mEngineVacuumDrawers = new List<EngineVacuumDrawer>();
 
-    [SerializeField] private InputField mPayload;
+    [SerializeField] private DeltaVPreset[] mDeltaVPresets;
+    [SerializeField] private Button mDeltaVPresetsOpen;
+    [SerializeField] private Transform mDeltaVPresetsRoot;
+    [SerializeField] private DeltaVPresetDrawer mDeltaVPresetDrawer;
 
+    [Space]
     [SerializeField] private InputField mDeltaVTerms;
     [SerializeField] private InputField mDeltaVMultiplier;
     [SerializeField] private InputField mTargetDeltaV;
+    [SerializeField] private InputField mPayload;
+
+    [Space]
     [SerializeField] private Transform mRoot;
     [SerializeField] private EngineVacuumDrawer mEngineVacuumDrawer;
 
@@ -69,9 +83,23 @@ public class VacuumUI : MonoBehaviour
         DeltaVMultiplier = PlayerPrefs.GetFloat("DeltaVMultiplier", 1.2f);
         mDeltaVMultiplier.text = DeltaVMultiplier.ToString("G", Locale.Format);
 
-        var terms = PlayerPrefs.GetString("DeltaVTerms");
-        OnDeltaVTermsEndEdit(terms);
+        mDeltaVTerms.text = PlayerPrefs.GetString("DeltaVTerms");
+        OnDeltaVTermsEndEdit(mDeltaVTerms.text);
         ShowRawDeltaV();
+
+        mDeltaVPresetsOpen.onClick.AddListener(() => mDeltaVPresetsRoot.gameObject.SetActive(!mDeltaVPresetsRoot.gameObject.activeSelf));
+        foreach (var preset in mDeltaVPresets)
+        {
+            var row = Instantiate(mDeltaVPresetDrawer, mDeltaVPresetsRoot);
+            row.Init(preset.Caption, preset.DeltaV, OnDeltaVPresetSelected);
+        }
+    }
+
+    private void OnDeltaVPresetSelected(string deltaV)
+    {
+        mDeltaVTerms.text = deltaV;
+        OnDeltaVTermsEndEdit(mDeltaVTerms.text);
+        mDeltaVPresetsRoot.gameObject.SetActive(false);
     }
 
     private void OnDestroy()

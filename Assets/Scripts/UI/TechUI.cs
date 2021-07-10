@@ -38,7 +38,7 @@ public class TechUI : MonoBehaviour
         }
     }
 
-    //TODO Minor Filtering by engine
+    //TODO Filtering by engine
 
     public event Action OnTechnologiesChanged;
 

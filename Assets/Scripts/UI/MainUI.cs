@@ -16,7 +16,7 @@ public class MainUI : MonoBehaviour
     [SerializeField] private List<CanvasButtonPair> mCanvasButtonPairs;
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
-    //TODO Minor Make Fuel Tanks Table
+    //TODO Make fuel tanks table
 
     void Start()
     {

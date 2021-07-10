@@ -33,8 +33,8 @@ public class LiquidIterator : IteratorBase
 
     private void TryAddStage(ref LiquidEngineAssembly assembly, Engine engine, bool isAtmosphereExists)
     {
-        //TODO Medium Why cool powerful motors like mammoth and vector are not included in the selection?
-        //TODO Minor Try adding a different engines
+        //TODO Why cool powerful motors like Mammoth and Vector are not included in the selection?
+        //TODO Try adding a different engines
 
         var averageAtmosphere = isAtmosphereExists ? (assembly.Stages.Count == 0 ? 0.5f : 1f) : 0f;
         var startAtmosphere = isAtmosphereExists ? 1f : 0f;
