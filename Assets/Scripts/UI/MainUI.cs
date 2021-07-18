@@ -17,6 +17,7 @@ public class MainUI : MonoBehaviour
     [SerializeField] private ScriptableObject[] mScriptableObjects;
 
     //TODO Make fuel tanks table
+    //TODO Make checkbox 'Transfer fuel'
 
     void Start()
     {
