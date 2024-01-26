@@ -36,6 +36,7 @@ public class TechDrawer : MonoBehaviour
         mTechUI = techUI;
         mLevel.text = tech.Level.ToString("N", Locale.Format);
         mImage.sprite = tech.Sprite;
+        mImage.color = tech.Sprite == null ? Color.clear : Color.white;
         mName.text = tech.Name;
         mButton.onClick.AddListener(SwitchState);
     }

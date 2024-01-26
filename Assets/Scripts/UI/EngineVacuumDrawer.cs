@@ -158,6 +158,7 @@ public class EngineVacuumDrawer : MonoBehaviour
         mImpulseText.text = engine.Impulse.ToString("N", Locale.Format) + "s";
         mEngineThrustText.text = engine.Thrust.ToString("N", Locale.Format) + "kN";
         mEngineImage.sprite = engine.Sprite;
+        mEngineImage.color = engine.Sprite == null ? Color.clear : Color.white;
         mEngineAlias.text = engine.Alias;
 
         mEnginesCountMin = mEngine.RadialMountedOnly ? 2 : 1;

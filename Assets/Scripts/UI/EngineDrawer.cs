@@ -12,6 +12,7 @@ public class EngineDrawer : MonoBehaviour
     {
         mEngineCount.text = engineCount.ToString();
         mEngineImage.sprite = engine.Sprite;
+        mEngineImage.color = engine.Sprite == null ? Color.clear : Color.white;
         mEngineAlias.text = engine.Alias;
         mEngineRate.text = rate > 0.99f ? string.Empty : (100f * rate).ToString("N", Locale.Format);
     }
